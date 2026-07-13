@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<title>Dashboard PDRB Per Kapita Indonesia 2021–2025</title>
+<style>
+:root{
+  --plane:#f9f9f7; --surface:#fcfcfb;
+  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --baseline:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --accent:#2a78d6; --accent-deep:#104281;
+  --seq:#2a78d6;
+  --inc-lm:#86b6ef; --inc-um:#2a78d6; --inc-hi:#104281; --inc-low:#cde2fb;
+  --s1:#2a78d6; --s2:#1baf7a; --s3:#eda100; --s4:#008300; --s5:#4a3aa7; --s6:#e34948;
+  --chip-bg:#f0efec;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --plane:#0d0d0d; --surface:#1a1a19;
+    --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --baseline:#383835; --ring:rgba(255,255,255,.10);
+    --accent:#3987e5; --accent-deep:#9ec5f4;
+    --seq:#3987e5;
+    --inc-lm:#184f95; --inc-um:#3987e5; --inc-hi:#9ec5f4; --inc-low:#0d366b;
+    --s1:#3987e5; --s2:#199e70; --s3:#c98500; --s4:#008300; --s5:#9085e9; --s6:#e66767;
+    --chip-bg:#262624;
+  }
+}
+:root[data-theme="dark"]{
+  --plane:#0d0d0d; --surface:#1a1a19;
+  --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --baseline:#383835; --ring:rgba(255,255,255,.10);
+  --accent:#3987e5; --accent-deep:#9ec5f4;
+  --seq:#3987e5;
+  --inc-lm:#184f95; --inc-um:#3987e5; --inc-hi:#9ec5f4; --inc-low:#0d366b;
+  --s1:#3987e5; --s2:#199e70; --s3:#c98500; --s4:#008300; --s5:#9085e9; --s6:#e66767;
+  --chip-bg:#262624;
+}
+:root[data-theme="light"]{
+  --plane:#f9f9f7; --surface:#fcfcfb;
+  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --baseline:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --accent:#2a78d6; --accent-deep:#104281;
+  --seq:#2a78d6;
+  --inc-lm:#86b6ef; --inc-um:#2a78d6; --inc-hi:#104281; --inc-low:#cde2fb;
+  --s1:#2a78d6; --s2:#1baf7a; --s3:#eda100; --s4:#008300; --s5:#4a3aa7; --s6:#e34948;
+  --chip-bg:#f0efec;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--plane); color:var(--ink);
+  font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;
+  padding:28px clamp(14px,3vw,40px) 60px;
+}
+h1,h2,h3{margin:0; text-wrap:balance}
+.eyebrow{font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+header.page{max-width:1200px; margin:0 auto 22px}
+header.page h1{font-size:clamp(22px,3.2vw,30px); letter-spacing:-.02em; margin-top:4px}
+header.page p.sub{color:var(--ink-2); margin:.5em 0 0; max-width:70ch}
+.wrap{max-width:1200px; margin:0 auto; display:flex; flex-direction:column; gap:18px}
+
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:14px}
+.kpi{background:var(--surface); border:1px solid var(--ring); border-radius:10px; padding:16px 18px 14px}
+.kpi .lab{font-size:11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.kpi .val{font-size:28px; font-weight:700; letter-spacing:-.01em; margin-top:6px}
+.kpi .val small{font-size:14px; font-weight:500; color:var(--ink-2)}
+.kpi .who{font-size:13px; color:var(--ink-2); margin-top:2px}
+
+.card{background:var(--surface); border:1px solid var(--ring); border-radius:10px; padding:18px 20px}
+.card h2{font-size:16px; font-weight:700; letter-spacing:-.01em}
+.card .note{font-size:12.5px; color:var(--muted); margin:2px 0 0}
+.cardhead{display:flex; flex-wrap:wrap; gap:10px 16px; align-items:flex-end; justify-content:space-between; margin-bottom:14px}
+.controls{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+
+.seg{display:inline-flex; border:1px solid var(--ring); border-radius:8px; overflow:hidden; background:var(--chip-bg)}
+.seg button{appearance:none; border:0; background:transparent; color:var(--ink-2); font:600 13px/1 inherit; font-family:inherit; padding:8px 12px; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent); color:#fff}
+:root[data-theme="dark"] .seg button[aria-pressed="true"],
+.seg button[aria-pressed="true"]{color:#fff}
+.seg button:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+
+input[type="text"],input[type="number"],select{
+  font:inherit; color:var(--ink); background:var(--surface);
+  border:1px solid var(--ring); border-radius:8px; padding:7px 10px;
+}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+
+.grid2{display:grid; grid-template-columns:minmax(0,7fr) minmax(0,5fr); gap:18px; align-items:start}
+@media (max-width:980px){.grid2{grid-template-columns:1fr}}
+
+/* ---- horizontal bar rows ---- */
+.bars{display:flex; flex-direction:column; gap:2px}
+.brow{display:grid; grid-template-columns:158px 1fr; gap:10px; align-items:center; padding:1px 0; border-radius:6px}
+.brow:hover{background:var(--chip-bg)}
+.brow .bl{font-size:12.5px; color:var(--ink-2); text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.brow .track{position:relative; height:16px; display:flex; align-items:center; min-width:0}
+.brow .bar{height:13px; border-radius:0 4px 4px 0; background:var(--seq); min-width:2px}
+.brow .bv{font-size:11.5px; color:var(--ink-2); margin-left:6px; white-space:nowrap; font-variant-numeric:tabular-nums}
+.brow.dim .bar{opacity:.92}
+.legend{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12.5px; color:var(--ink-2); margin:2px 0 12px}
+.legend .sw{display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:6px; vertical-align:-1px}
+
+.incsummary{display:flex; flex-direction:column; gap:10px}
+.incrow{display:flex; align-items:baseline; gap:10px}
+.incrow .n{font-size:26px; font-weight:700; min-width:44px; text-align:right; font-variant-numeric:tabular-nums}
+.incrow .t{font-size:13.5px; color:var(--ink-2)}
+.kursrow{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2); margin-top:6px}
+.kursrow input{width:96px; font-variant-numeric:tabular-nums}
+.finenote{font-size:12px; color:var(--muted); margin-top:10px; line-height:1.45}
+
+/* ---- line chart ---- */
+.lc-wrap{position:relative}
+svg text{font-family:inherit}
+.chips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px}
+.chip{display:inline-flex; align-items:center; gap:7px; background:var(--chip-bg); border:1px solid var(--ring);
+  border-radius:999px; padding:4px 8px 4px 10px; font-size:12.5px; color:var(--ink)}
+.chip .dot{width:9px; height:9px; border-radius:50%}
+.chip button{appearance:none; border:0; background:transparent; color:var(--muted); font-size:14px; line-height:1; cursor:pointer; padding:2px 4px; border-radius:50%}
+.chip button:hover{color:var(--ink)}
+
+#map path{stroke:var(--surface); stroke-width:.7; cursor:default}
+#map path:hover{stroke:var(--ink); stroke-width:1.1}
+.tooltip{
+  position:fixed; z-index:50; pointer-events:none; display:none;
+  background:var(--surface); border:1px solid var(--ring); border-radius:8px;
+  box-shadow:0 4px 18px rgba(0,0,0,.14); padding:9px 12px; font-size:12.5px; max-width:280px;
+}
+.tooltip .tt-t{font-weight:700; margin-bottom:3px}
+.tooltip table{border-collapse:collapse}
+.tooltip td{padding:1px 0; color:var(--ink-2); font-variant-numeric:tabular-nums}
+.tooltip td:first-child{padding-right:12px; color:var(--muted)}
+.tooltip td:last-child{text-align:right; color:var(--ink)}
+
+/* ---- data table ---- */
+.tbl-scroll{overflow-x:auto; max-height:560px; overflow-y:auto; border:1px solid var(--ring); border-radius:8px}
+table.data{border-collapse:collapse; width:100%; font-size:13px; min-width:760px}
+table.data th{
+  position:sticky; top:0; background:var(--surface); z-index:2;
+  text-align:right; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+  padding:9px 12px; border-bottom:1px solid var(--grid); cursor:pointer; user-select:none; white-space:nowrap;
+}
+table.data th.l{text-align:left}
+table.data th[aria-sort]:not([aria-sort="none"])::after{content:" ▾"; color:var(--accent)}
+table.data th[aria-sort="ascending"]::after{content:" ▴"}
+table.data td{padding:6px 12px; border-bottom:1px solid var(--grid); text-align:right; font-variant-numeric:tabular-nums; color:var(--ink); white-space:nowrap}
+table.data td.l{text-align:left}
+table.data td .pv{color:var(--muted); font-size:11.5px}
+table.data tr:hover td{background:var(--chip-bg)}
+.pos{color:#006300} :root[data-theme="dark"] .pos{color:#0ca30c}
+@media (prefers-color-scheme: dark){ .pos{color:#0ca30c} }
+:root[data-theme="light"] .pos{color:#006300}
+
+footer.src{max-width:1200px; margin:26px auto 0; font-size:12px; color:var(--muted); line-height:1.5}
+@media (prefers-reduced-motion: no-preference){
+  .brow .bar{transition:width .35s ease}
+}
+</style>
+</head>
+<body>
+
+<header class="page">
+  <div class="eyebrow">Statistik regional · BPS · 2021–2025</div>
+  <h1>Dashboard PDRB Per Kapita Indonesia</h1>
+  <p class="sub">PDRB per kapita atas dasar harga berlaku (ADHB) untuk <strong>38 provinsi</strong> dan
+  <strong>514 kabupaten/kota</strong>, dalam ribu rupiah. Angka 2024 sementara, 2025 sangat sementara.</p>
+</header>
+
+<div class="wrap">
+
+  <section class="kpis" id="kpis" aria-label="Ringkasan 2025"></section>
+
+  <section class="card">
+    <div class="cardhead">
+      <div>
+        <h2>Peta kategori pendapatan provinsi</h2>
+        <p class="note" id="mapNote"></p>
+      </div>
+      <div class="controls">
+        <div class="seg" id="mapYear" role="group" aria-label="Pilih tahun peta"></div>
+      </div>
+    </div>
+    <div class="legend" id="mapLegend"></div>
+    <svg id="map" viewBox="0 0 1000 368" width="100%" role="img"
+         aria-label="Peta koroplet 38 provinsi Indonesia menurut kategori pendapatan"></svg>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <div class="cardhead">
+        <div>
+          <h2>PDRB per kapita menurut provinsi</h2>
+          <p class="note">Ribu rupiah per kapita · diurutkan dari tertinggi · warna = kategori pendapatan (estimasi)</p>
+        </div>
+        <div class="controls">
+          <div class="seg" id="provYear" role="group" aria-label="Pilih tahun"></div>
+        </div>
+      </div>
+      <div class="legend" id="provLegend"></div>
+      <div class="bars" id="provBars"></div>
+    </section>
+
+    <div style="display:flex; flex-direction:column; gap:18px; min-width:0">
+      <section class="card">
+        <div class="cardhead">
+          <div>
+            <h2>Kategori pendapatan provinsi</h2>
+            <p class="note" id="incNoteYear"></p>
+          </div>
+        </div>
+        <div class="incsummary" id="incSummary"></div>
+        <div class="kursrow">
+          <label for="kurs">Asumsi kurs Rp/US$</label>
+          <input type="number" id="kurs" value="16300" min="8000" max="25000" step="100">
+        </div>
+        <p class="finenote">Estimasi kasar: PDRB per kapita dikonversi ke US$ lalu dibandingkan ambang
+        Bank Dunia FY2026 (lower-middle $1.136–4.495 · upper-middle $4.496–13.935 · high &gt;$13.935).
+        Ambang resmi memakai GNI per kapita (metode Atlas), bukan PDRB, jadi hasilnya indikatif.</p>
+      </section>
+
+      <section class="card">
+        <div class="cardhead">
+          <div>
+            <h2>Tren 2021–2025</h2>
+            <p class="note">Juta rupiah per kapita · maks. 6 provinsi</p>
+          </div>
+        </div>
+        <div class="chips" id="trendChips"></div>
+        <div class="controls" style="margin-bottom:10px">
+          <select id="trendAdd" aria-label="Tambah provinsi ke grafik tren"></select>
+        </div>
+        <div class="lc-wrap"><svg id="lineChart" viewBox="0 0 560 330" width="100%" role="img" aria-label="Grafik garis tren PDRB per kapita 2021 sampai 2025"></svg></div>
+      </section>
+    </div>
+  </div>
+
+  <section class="card">
+    <div class="cardhead">
+      <div>
+        <h2 id="kkTitle">Kabupaten/kota — 15 tertinggi (2025)</h2>
+        <p class="note">Ribu rupiah per kapita, 2025</p>
+      </div>
+      <div class="controls">
+        <div class="seg" id="kkToggle" role="group" aria-label="Tertinggi atau terendah">
+          <button aria-pressed="true" data-v="top">15 tertinggi</button>
+          <button aria-pressed="false" data-v="bot">15 terendah</button>
+        </div>
+      </div>
+    </div>
+    <div class="bars" id="kkBars"></div>
+  </section>
+
+  <section class="card">
+    <div class="cardhead">
+      <div>
+        <h2>Seluruh kabupaten/kota</h2>
+        <p class="note">514 wilayah · klik judul kolom untuk mengurutkan · "–" = data belum tersedia</p>
+      </div>
+      <div class="controls">
+        <input type="text" id="q" placeholder="Cari kabupaten/kota…" aria-label="Cari kabupaten atau kota">
+        <select id="provFilter" aria-label="Filter provinsi"><option value="">Semua provinsi</option></select>
+      </div>
+    </div>
+    <div class="tbl-scroll">
+      <table class="data" id="dataTable">
+        <thead><tr>
+          <th class="l" data-k="n">Kabupaten/Kota</th>
+          <th data-k="0">2021</th><th data-k="1">2022</th><th data-k="2">2023</th>
+          <th data-k="3">2024*</th><th data-k="4" aria-sort="descending">2025**</th>
+          <th data-k="g">Δ p.a.</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<footer class="src">
+  Sumber: BPS, <em>Produk Domestik Regional Bruto Kabupaten/Kota di Indonesia 2021–2025</em>, Tabel 153–190
+  (PDRB per kapita ADHB, ribu rupiah). * angka sementara · ** angka sangat sementara.
+  Wilayah pemekaran Papua tercatat di provinsi barunya; nilai 2021–2022 diambil dari tabel provinsi induk.
+  Δ p.a. = pertumbuhan nominal rata-rata per tahun dari tahun pertama yang tersedia hingga 2025.
+</footer>
+
+<div class="tooltip" id="tt"></div>
+
+<script>
+const DATA = {"provs":[{"p":"Aceh","v":[34674,38767,41408,43782,45770]},{"p":"Sumatera Utara","v":[57442,62922,68306,73575,78310]},{"p":"Sumatera Barat","v":[45218,50264,54334,57083,59549]},{"p":"Riau","v":[129741,151259,154522,165350,176385]},{"p":"Jambi","v":[64771,76224,79873,86775,92786]},{"p":"Sumatera Selatan","v":[57745,68239,71958,75132,80663]},{"p":"Bengkulu","v":[39167,43757,46301,49233,52305]},{"p":"Lampung","v":[40807,44982,48188,51387,55009]},{"p":"Kepulauan Bangka Belitung","v":[58406,63866,67813,70193,75323]},{"p":"Kepulauan Riau","v":[131884,145530,154065,161424,172459]},{"p":"DKI Jakarta","v":[274660,299675,322651,344383,367687]},{"p":"Jawa Barat","v":[45234,49137,52651,56082,59865]},{"p":"Jawa Tengah","v":[38568,41934,45162,47970,50824]},{"p":"DI Yogyakarta","v":[40516,44639,48373,51486,55039]},{"p":"Jawa Timur","v":[59988,66248,71122,75770,80856]},{"p":"Banten","v":[55383,61414,66147,70276,74673]},{"p":"Bali","v":[50758,56093,62299,67318,72658]},{"p":"Nusa Tenggara Barat","v":[26009,28671,29926,32282,33667]},{"p":"Nusa Tenggara Timur","v":[20555,21658,23079,24303,25837]},{"p":"Kalimantan Barat","v":[42253,46092,48809,52703,56984]},{"p":"Kalimantan Tengah","v":[62834,72973,75271,79320,84730]},{"p":"Kalimantan Selatan","v":[48066,60213,63754,67122,70577]},{"p":"Kalimantan Timur","v":[183158,238917,215804,212117,208331]},{"p":"Kalimantan Utara","v":[157092,192588,201789,198677,208210]},{"p":"Sulawesi Utara","v":[54034,59021,64131,69352,75235]},{"p":"Sulawesi Tengah","v":[82017,106068,112461,120750,131643]},{"p":"Sulawesi Selatan","v":[59503,65353,69710,73573,78748]},{"p":"Sulawesi Tenggara","v":[52436,58715,64088,67840,72031]},{"p":"Gorontalo","v":[37087,39691,42341,44437,47477]},{"p":"Sulawesi Barat","v":[35195,37034,39547,42718,46654]},{"p":"Maluku","v":[26153,28537,30455,32199,33652]},{"p":"Maluku Utara","v":[40381,53776,64270,71517,97262]},{"p":"Papua Barat","v":[74022,78141,108110,131636,139213]},{"p":"Papua Barat Daya","v":[null,null,58450,59064,61624]},{"p":"Papua","v":[54051,59384,78055,81009,84305]},{"p":"Papua Selatan","v":[null,null,58581,61622,64928]},{"p":"Papua Tengah","v":[null,null,103508,118774,107566]},{"p":"Papua Pegunungan","v":[null,null,16870,18105,19111]}],"kk":[{"n":"Kab. Simeulue","p":"Aceh","v":[26153,28117,30222,31944,34332]},{"n":"Kab. Aceh Singkil","p":"Aceh","v":[21135,22959,24030,25361,27120]},{"n":"Kab. Aceh Selatan","p":"Aceh","v":[25471,27208,29078,30853,32867]},{"n":"Kab. Aceh Tenggara","p":"Aceh","v":[24239,25643,27104,28742,30391]},{"n":"Kab. Aceh Timur","p":"Aceh","v":[27403,30288,31505,33666,35007]},{"n":"Kab. Aceh Tengah","p":"Aceh","v":[36859,40172,43973,47284,50101]},{"n":"Kab. Aceh Barat","p":"Aceh","v":[49805,62823,66280,67938,71015]},{"n":"Kab. Aceh Besar","p":"Aceh","v":[34243,37120,40410,42993,45054]},{"n":"Kab. Pidie","p":"Aceh","v":[25836,27984,30105,32150,34056]},{"n":"Kab. Bireun","p":"Aceh","v":[31906,34584,37570,40039,42652]},{"n":"Kab. Aceh Utara","p":"Aceh","v":[38076,45612,45411,47628,48218]},{"n":"Kab. Aceh Barat Daya","p":"Aceh","v":[27130,29376,31625,33721,35876]},{"n":"Kab. Gayo Lues","p":"Aceh","v":[28315,29878,31808,33552,34968]},{"n":"Kab. Aceh Tamiang","p":"Aceh","v":[29835,34622,35151,37412,38379]},{"n":"Kab. Nagan Raya","p":"Aceh","v":[53429,61797,68090,70463,74571]},{"n":"Kab. Aceh Jaya","p":"Aceh","v":[30277,32497,34554,36357,38503]},{"n":"Kab. Bener Meriah","p":"Aceh","v":[30623,32918,35569,37903,40348]},{"n":"Kab. Pidie Jaya","p":"Aceh","v":[22992,24536,26461,28383,29752]},{"n":"Kota Banda Aceh","p":"Aceh","v":[78060,83314,90749,98201,104356]},{"n":"Kota Sabang","p":"Aceh","v":[38425,38846,40732,42813,44820]},{"n":"Kota Langsa","p":"Aceh","v":[30612,32701,35194,37006,38412]},{"n":"Kota Lhokseumawe","p":"Aceh","v":[49344,52908,56597,59122,62538]},{"n":"Kota Subulussalam","p":"Aceh","v":[22834,24986,26428,27880,29503]},{"n":"Kab. Nias","p":"Sumatera Utara","v":[28240,29921,31614,34085,35990]},{"n":"Kab. Mandailing Natal","p":"Sumatera Utara","v":[31022,33585,36868,40129,42926]},{"n":"Kab. Tapanuli Selatan","p":"Sumatera Utara","v":[50832,55276,60394,67227,73793]},{"n":"Kab. Tapanuli Tengah","p":"Sumatera Utara","v":[28637,30712,32649,34619,36137]},{"n":"Kab. Tapanuli Utara","p":"Sumatera Utara","v":[27910,30216,32466,34494,36426]},{"n":"Kab. Toba Samosir","p":"Sumatera Utara","v":[39732,42396,45154,47455,49330]},{"n":"Kab. Labuhan Batu","p":"Sumatera Utara","v":[75246,82480,89062,97593,104032]},{"n":"Kab. Asahan","p":"Sumatera Utara","v":[53874,58872,63898,70611,76576]},{"n":"Kab. Simalungun","p":"Sumatera Utara","v":[42433,46370,50428,56003,60712]},{"n":"Kab. Dairi","p":"Sumatera Utara","v":[31013,33604,35878,38398,40478]},{"n":"Kab. Karo","p":"Sumatera Utara","v":[53322,57762,62759,67690,70508]},{"n":"Kab. Deli Serdang","p":"Sumatera Utara","v":[58964,64186,68923,73934,78077]},{"n":"Kab. Langkat","p":"Sumatera Utara","v":[44485,48775,52677,57859,62527]},{"n":"Kab. Nias Selatan","p":"Sumatera Utara","v":[20201,21373,22416,23409,24242]},{"n":"Kab. Humbang Hasundutan","p":"Sumatera Utara","v":[31789,34199,37396,39949,42161]},{"n":"Kab. Pakpak Bharat","p":"Sumatera Utara","v":[23955,25755,28271,30576,32695]},{"n":"Kab. Samosir","p":"Sumatera Utara","v":[34509,37017,40017,42639,44948]},{"n":"Kab. Serdang Bedagai","p":"Sumatera Utara","v":[45761,49734,54961,60743,66022]},{"n":"Kab. Batu Bara","p":"Sumatera Utara","v":[89340,96493,101676,108189,115740]},{"n":"Kab. Padang Lawas Utara","p":"Sumatera Utara","v":[49589,53197,57442,63548,68393]},{"n":"Kab. Padang Lawas","p":"Sumatera Utara","v":[49558,53939,58506,65288,71948]},{"n":"Kab. Labuhan Batu Selatan","p":"Sumatera Utara","v":[96442,105126,113617,124517,134913]},{"n":"Kab. Labuhan Batu Utara","p":"Sumatera Utara","v":[70672,76695,82792,89497,95498]},{"n":"Kab. Nias Utara","p":"Sumatera Utara","v":[25804,27270,28728,30190,31766]},{"n":"Kab. Nias Barat","p":"Sumatera Utara","v":[22095,23264,24509,26031,26953]},{"n":"Kota Sibolga","p":"Sumatera Utara","v":[64179,69828,74736,78494,82119]},{"n":"Kota Tanjung Balai","p":"Sumatera Utara","v":[54084,57938,61197,65758,69877]},{"n":"Kota Pematang Siantar","p":"Sumatera Utara","v":[52580,55796,59046,62629,66086]},{"n":"Kota Tebing Tinggi","p":"Sumatera Utara","v":[36374,39210,41519,43514,45172]},{"n":"Kota Medan","p":"Sumatera Utara","v":[104004,113797,122592,132571,141412]},{"n":"Kota Binjai","p":"Sumatera Utara","v":[41737,44499,47679,50750,53531]},{"n":"Kota Padang Sidempuan","p":"Sumatera Utara","v":[29710,31791,33566,35727,37452]},{"n":"Kota Gunungsitoli","p":"Sumatera Utara","v":[43598,46106,48460,50415,51839]},{"n":"Kab. Kepulauan Mentawai","p":"Sumatera Barat","v":[54603,60449,64784,67574,70078]},{"n":"Kab. Pesisir Selatan","p":"Sumatera Barat","v":[29268,32077,34216,35865,37672]},{"n":"Kab. Solok","p":"Sumatera Barat","v":[35879,39424,42584,44727,46728]},{"n":"Kab. Sijunjung","p":"Sumatera Barat","v":[40299,44343,48172,50993,54192]},{"n":"Kab. Tanah Datar","p":"Sumatera Barat","v":[36286,39722,43131,45268,47033]},{"n":"Kab. Padang Pariaman","p":"Sumatera Barat","v":[42314,50019,55715,58687,59510]},{"n":"Kab. Agam","p":"Sumatera Barat","v":[39911,43937,47495,49994,52226]},{"n":"Kab. Lima Puluh Kota","p":"Sumatera Barat","v":[41810,45693,49456,52107,55424]},{"n":"Kab. Pasaman","p":"Sumatera Barat","v":[31090,33702,36141,38136,39977]},{"n":"Kab. Solok Selatan","p":"Sumatera Barat","v":[31309,34199,36917,39130,41091]},{"n":"Kab. Dharmasraya","p":"Sumatera Barat","v":[46450,51886,55653,58908,62070]},{"n":"Kab. Pasaman Barat","p":"Sumatera Barat","v":[36472,40306,43338,46114,49730]},{"n":"Kota Padang","p":"Sumatera Barat","v":[70884,78356,84376,88030,92210]},{"n":"Kota Solok","p":"Sumatera Barat","v":[57010,62882,67819,70365,72531]},{"n":"Kota Sawah Lunto","p":"Sumatera Barat","v":[58530,65737,71834,74768,78072]},{"n":"Kota Padang Panjang","p":"Sumatera Barat","v":[64124,70732,77304,81129,84091]},{"n":"Kota Bukittinggi","p":"Sumatera Barat","v":[74001,82854,90281,94538,98634]},{"n":"Kota Payakumbuh","p":"Sumatera Barat","v":[51809,57734,61663,63820,66037]},{"n":"Kota Pariaman","p":"Sumatera Barat","v":[55412,61228,66250,69308,73255]},{"n":"Kab. Kuantan Singingi","p":"Riau","v":[114654,131364,137874,148878,165729]},{"n":"Kab.indragiri Hulu","p":"Riau","v":[106177,118837,122197,129125,138340]},{"n":"Kab.indragiri Hilir","p":"Riau","v":[110896,124221,129260,138693,151246]},{"n":"Kab. Pelalawan","p":"Riau","v":[145721,163051,172617,187221,201842]},{"n":"Kab. Siak","p":"Riau","v":[193401,227500,230416,250381,268741]},{"n":"Kab. Kampar","p":"Riau","v":[101399,119442,121395,130105,139238]},{"n":"Kab. Rokan Hulu","p":"Riau","v":[74221,85142,89129,95447,108513]},{"n":"Kab. Bengkalis","p":"Riau","v":[244869,304609,288308,296914,292063]},{"n":"Kab. Rokan Hilir","p":"Riau","v":[124189,146801,144751,152221,158403]},{"n":"Kab. Kepulauan Meranti","p":"Riau","v":[101506,118777,120914,128527,137262]},{"n":"Kota Pekan Baru","p":"Riau","v":[127215,143746,157385,166856,178023]},{"n":"Kota Dumai","p":"Riau","v":[124686,138762,149083,158148,171171]},{"n":"Kab. Kerinci","p":"Jambi","v":[44640,48234,52556,57303,61231]},{"n":"Kab. Merangin","p":"Jambi","v":[49810,55836,61164,68413,73667]},{"n":"Kab. Sarolangun","p":"Jambi","v":[56433,69896,71440,74686,79338]},{"n":"Kab. Batanghari","p":"Jambi","v":[61695,78708,81296,83038,89310]},{"n":"Kab. Muaro Jambi","p":"Jambi","v":[67726,79821,85682,95236,102140]},{"n":"Kab. Tanjung Jabung Timur","p":"Jambi","v":[93886,109239,108822,117591,127737]},{"n":"Kab. Tanjung Jabung Barat","p":"Jambi","v":[131006,153699,154096,167518,182033]},{"n":"Kab. Tebo","p":"Jambi","v":[49639,56907,59843,64162,69024]},{"n":"Kab. Bungo","p":"Jambi","v":[54816,67067,69888,71624,75853]},{"n":"Kota Jambi","p":"Jambi","v":[52094,58339,64639,69033,73339]},{"n":"Kota Sungai Penuh","p":"Jambi","v":[81810,87989,94924,102060,108706]},{"n":"Kab. Ogan Komering Ulu","p":"Sumatera Selatan","v":[42405,46957,50034,53428,57539]},{"n":"Kab. Ogan Komering Ilir","p":"Sumatera Selatan","v":[40180,50036,53880,57799,62413]},{"n":"Kab. Muara Enim","p":"Sumatera Selatan","v":[112419,181316,187001,182108,197853]},{"n":"Kab. Lahat","p":"Sumatera Selatan","v":[45229,63324,65825,66582,71122]},{"n":"Kab. Musi Rawas","p":"Sumatera Selatan","v":[51147,55375,57706,61857,65504]},{"n":"Kab. Musi Banyuasin","p":"Sumatera Selatan","v":[115562,129486,132950,142138,150064]},{"n":"Kab. Banyuasin","p":"Sumatera Selatan","v":[36445,39592,43052,44734,48766]},{"n":"Kab. Ogan Komering Ulu Selatan","p":"Sumatera Selatan","v":[23062,24665,26145,27724,29443]},{"n":"Kab. Ogan Komering Ulu Timur","p":"Sumatera Selatan","v":[24797,26952,29138,31504,33145]},{"n":"Kab. Ogan Ilir","p":"Sumatera Selatan","v":[28641,31102,33033,35023,37001]},{"n":"Kab. Empat Lawang","p":"Sumatera Selatan","v":[16098,17201,18364,19448,21151]},{"n":"Kab. Penukal Abab Lematang Ilir","p":"Sumatera Selatan","v":[38185,40988,43019,45701,49703]},{"n":"Kab. Musi Rawas Utara","p":"Sumatera Selatan","v":[40567,44189,46270,48869,50163]},{"n":"Kota Palembang","p":"Sumatera Selatan","v":[96426,105750,114025,121154,130917]},{"n":"Kota Prabumulih","p":"Sumatera Selatan","v":[42736,46471,49006,51808,55058]},{"n":"Kota Pagar Alam","p":"Sumatera Selatan","v":[20707,22236,23612,25543,27708]},{"n":"Kota Lubuk Linggau","p":"Sumatera Selatan","v":[29707,32052,33887,35432,37690]},{"n":"Kab. Bengkulu Selatan","p":"Bengkulu","v":[36954,39582,41998,45375,48580]},{"n":"Kab. Rejang Lebong","p":"Bengkulu","v":[36134,38910,41648,45238,48053]},{"n":"Kab. Bengkulu Utara","p":"Bengkulu","v":[32906,40641,40731,41214,43622]},{"n":"Kab. Kaur","p":"Bengkulu","v":[30519,32651,34699,37416,40155]},{"n":"Kab. Seluma","p":"Bengkulu","v":[24069,25578,26824,29171,31160]},{"n":"Kab. Mukomuko","p":"Bengkulu","v":[29519,31744,34204,37513,40606]},{"n":"Kab. Lebong","p":"Bengkulu","v":[33763,35710,37691,40991,43585]},{"n":"Kab. Kepahiang","p":"Bengkulu","v":[31420,33750,36311,40072,43404]},{"n":"Kab. Bengkulu Tengah","p":"Bengkulu","v":[46330,54734,55021,55284,57775]},{"n":"Kota Bengkulu","p":"Bengkulu","v":[65943,72977,78778,83430,88539]},{"n":"Kab. Lampung Barat","p":"Lampung","v":[24503,26802,28855,31347,33739]},{"n":"Kab. Tanggamus","p":"Lampung","v":[25238,27644,29595,31621,33516]},{"n":"Kab. Lampung Selatan","p":"Lampung","v":[42847,47031,50674,53891,57931]},{"n":"Kab. Lampung Timur","p":"Lampung","v":[39143,43947,46273,49275,52319]},{"n":"Kab. Lampung Tengah","p":"Lampung","v":[50445,55289,59708,63663,68413]},{"n":"Kab. Lampung Utara","p":"Lampung","v":[38888,41758,44752,48212,51760]},{"n":"Kab. Way Kanan","p":"Lampung","v":[30641,33481,35886,38655,41733]},{"n":"Kab. Tulang Bawang","p":"Lampung","v":[55623,59077,63390,67726,72989]},{"n":"Kab. Pesawaran","p":"Lampung","v":[34880,38102,40904,43308,46313]},{"n":"Kab. Pringsewu","p":"Lampung","v":[28483,30984,33389,35552,38197]},{"n":"Kab. Mesuji","p":"Lampung","v":[47214,51038,54421,58582,62954]},{"n":"Kab. Tulang Bawang Barat","p":"Lampung","v":[41431,45296,48702,52209,55874]},{"n":"Kab. Pesisir Barat","p":"Lampung","v":[29718,31972,33783,35637,38200]},{"n":"Kota Bandar Lampung","p":"Lampung","v":[52259,57258,61970,65744,70118]},{"n":"Kota Metro","p":"Lampung","v":[38593,42001,45237,48264,51741]},{"n":"Kab. Bangka","p":"Kepulauan Bangka Belitung","v":[49064,53801,57065,58572,63272]},{"n":"Kab. Belitung","p":"Kepulauan Bangka Belitung","v":[59575,65879,71365,73795,78751]},{"n":"Kab. Bangka Barat","p":"Kepulauan Bangka Belitung","v":[74600,79856,83190,91214,97858]},{"n":"Kab. Bangka Tengah","p":"Kepulauan Bangka Belitung","v":[46572,51486,54978,56083,60591]},{"n":"Kab. Bangka Selatan","p":"Kepulauan Bangka Belitung","v":[48799,52638,55005,57693,61995]},{"n":"Kab. Belitung Timur","p":"Kepulauan Bangka Belitung","v":[69334,75426,80364,82598,89142]},{"n":"Kota Pangkal Pinang","p":"Kepulauan Bangka Belitung","v":[69596,77075,82866,82198,87213]},{"n":"Kab. Karimun","p":"Kepulauan Riau","v":[55678,60336,65299,69608,74982]},{"n":"Kab. Bintan","p":"Kepulauan Riau","v":[131846,149877,165561,180544,193677]},{"n":"Kab. Natuna","p":"Kepulauan Riau","v":[253651,290848,278008,264903,281436]},{"n":"Kab. Lingga","p":"Kepulauan Riau","v":[45439,48510,51964,54936,57827]},{"n":"Kab. Kep. Anambas","p":"Kepulauan Riau","v":[349503,410971,391952,362072,399577]},{"n":"Kota Batam","p":"Kepulauan Riau","v":[142243,157633,171968,182507,195565]},{"n":"Kota Tanjung Pinang","p":"Kepulauan Riau","v":[87563,93851,100210,105384,111013]},{"n":"Kab. Kepulauan Seribu","p":"DKI Jakarta","v":[291267,358302,287934,281243,256168]},{"n":"Kota Jakarta Selatan","p":"DKI Jakarta","v":[299398,327041,354295,381118,409066]},{"n":"Kota Jakarta Timur","p":"DKI Jakarta","v":[163971,178421,192429,204503,218523]},{"n":"Kota Jakarta Pusat","p":"DKI Jakarta","v":[688487,755015,818954,882895,949177]},{"n":"Kota Jakarta Barat","p":"DKI Jakarta","v":[201829,219934,236959,253093,269434]},{"n":"Kota Jakarta Utara","p":"DKI Jakarta","v":[299603,326693,348918,368953,392506]},{"n":"Kab. Bogor","p":"Jawa Barat","v":[45384,48187,51378,54859,58788]},{"n":"Kab. Sukabumi","p":"Jawa Barat","v":[25747,27472,29374,31167,33442]},{"n":"Kab. Cianjur","p":"Jawa Barat","v":[20050,21341,22826,24914,26555]},{"n":"Kab. Bandung","p":"Jawa Barat","v":[35724,38783,41372,44126,47558]},{"n":"Kab. Garut","p":"Jawa Barat","v":[23277,25138,26914,29012,31287]},{"n":"Kab. Tasikmalaya","p":"Jawa Barat","v":[20931,22545,24172,25916,28081]},{"n":"Kab. Ciamis","p":"Jawa Barat","v":[27282,29577,31834,34336,36794]},{"n":"Kab. Kuningan","p":"Jawa Barat","v":[22891,24827,27081,29273,34235]},{"n":"Kab. Cirebon","p":"Jawa Barat","v":[22730,24301,25974,28140,30639]},{"n":"Kab. Majalengka","p":"Jawa Barat","v":[25975,28447,31138,34234,37079]},{"n":"Kab. Sumedang","p":"Jawa Barat","v":[31970,34243,36773,39699,42652]},{"n":"Kab.indramayu","p":"Jawa Barat","v":[44064,48454,54669,55166,59333]},{"n":"Kab. Subang","p":"Jawa Barat","v":[26095,28223,30120,33037,34956]},{"n":"Kab. Purwakarta","p":"Jawa Barat","v":[70152,74745,79194,84024,89218]},{"n":"Kab. Karawang","p":"Jawa Barat","v":[98846,107455,115169,121298,130653]},{"n":"Kab. Bekasi","p":"Jawa Barat","v":[108104,115085,121647,128693,136696]},{"n":"Kab. Bandung Barat","p":"Jawa Barat","v":[26965,28852,30622,32500,34549]},{"n":"Kab. Pangandaran","p":"Jawa Barat","v":[28501,30714,33042,35647,38393]},{"n":"Kota Bogor","p":"Jawa Barat","v":[45984,49875,53239,56616,60701]},{"n":"Kota Sukabumi","p":"Jawa Barat","v":[37278,39931,42562,44760,47649]},{"n":"Kota Bandung","p":"Jawa Barat","v":[120710,132098,140144,147081,158495]},{"n":"Kota Cirebon","p":"Jawa Barat","v":[72978,78532,84135,88560,95182]},{"n":"Kota Bekasi","p":"Jawa Barat","v":[39479,42293,45281,48922,52514]},{"n":"Kota Depok","p":"Jawa Barat","v":[35741,38402,40817,43515,46686]},{"n":"Kota Cimahi","p":"Jawa Barat","v":[59612,64427,68552,72528,76989]},{"n":"Kota Tasikmalaya","p":"Jawa Barat","v":[31592,34096,36955,39445,42129]},{"n":"Kota Banjar","p":"Jawa Barat","v":[22993,24023,25278,26451,28051]},{"n":"Kab. Cilacap","p":"Jawa Tengah","v":[55740,60883,65976,67203,69736]},{"n":"Kab. Banyumas","p":"Jawa Tengah","v":[31789,34711,37609,40236,42784]},{"n":"Kab. Purbalingga","p":"Jawa Tengah","v":[26232,28347,30380,32232,34427]},{"n":"Kab. Banjarnegara","p":"Jawa Tengah","v":[22256,24114,25972,27685,29366]},{"n":"Kab. Kebumen","p":"Jawa Tengah","v":[21694,23630,25602,27304,28999]},{"n":"Kab. Purworejo","p":"Jawa Tengah","v":[25311,27326,29416,31224,33035]},{"n":"Kab. Wonosobo","p":"Jawa Tengah","v":[22377,24023,25646,27206,28721]},{"n":"Kab. Magelang","p":"Jawa Tengah","v":[26125,28367,30551,32600,34751]},{"n":"Kab. Boyolali","p":"Jawa Tengah","v":[32614,35909,39184,41699,44028]},{"n":"Kab. Klaten","p":"Jawa Tengah","v":[33371,36523,39902,42732,44917]},{"n":"Kab. Sukoharjo","p":"Jawa Tengah","v":[42649,46323,49834,53022,56279]},{"n":"Kab. Wonogiri","p":"Jawa Tengah","v":[29276,32152,35164,37816,40506]},{"n":"Kab. Karanganyar","p":"Jawa Tengah","v":[41617,45446,49366,53148,56882]},{"n":"Kab. Sragen","p":"Jawa Tengah","v":[40809,44690,48677,52175,55523]},{"n":"Kab. Grobogan","p":"Jawa Tengah","v":[19674,21506,23284,24908,26421]},{"n":"Kab. Blora","p":"Jawa Tengah","v":[30316,34565,35191,36598,38547]},{"n":"Kab. Rembang","p":"Jawa Tengah","v":[30908,33758,36546,38792,41352]},{"n":"Kab. Pati","p":"Jawa Tengah","v":[34122,37245,40281,43092,46043]},{"n":"Kab. Kudus","p":"Jawa Tengah","v":[126948,132334,138746,145620,148384]},{"n":"Kab. Jepara","p":"Jawa Tengah","v":[26783,28981,31152,32894,34918]},{"n":"Kab. Demak","p":"Jawa Tengah","v":[22768,24643,26615,28313,30654]},{"n":"Kab. Semarang","p":"Jawa Tengah","v":[48793,52845,56706,60274,64076]},{"n":"Kab. Temanggung","p":"Jawa Tengah","v":[28462,30837,33267,35500,38002]},{"n":"Kab. Kendal","p":"Jawa Tengah","v":[43937,47728,51628,55273,60002]},{"n":"Kab. Batang","p":"Jawa Tengah","v":[28571,31055,33635,36295,39390]},{"n":"Kab. Pekalongan","p":"Jawa Tengah","v":[24437,26080,27960,29786,31722]},{"n":"Kab. Pemalang","p":"Jawa Tengah","v":[18465,19876,21228,22652,24047]},{"n":"Kab. Tegal","p":"Jawa Tengah","v":[23141,24946,26852,28556,30348]},{"n":"Kab. Brebes","p":"Jawa Tengah","v":[24525,26557,28147,30040,31768]},{"n":"Kota Magelang","p":"Jawa Tengah","v":[75495,82660,89955,96594,103577]},{"n":"Kota Surakarta","p":"Jawa Tengah","v":[96109,106264,114885,122512,130017]},{"n":"Kota Salatiga","p":"Jawa Tengah","v":[72166,78261,84307,89833,95230]},{"n":"Kota Semarang","p":"Jawa Tengah","v":[123037,135328,146839,156607,167236]},{"n":"Kota Pekalongan","p":"Jawa Tengah","v":[36955,40115,43265,45988,48994]},{"n":"Kota Tegal","p":"Jawa Tengah","v":[57949,63224,67764,72289,77030]},{"n":"Kab. Kulon Progo","p":"DI Yogyakarta","v":[28851,32508,35755,37987,40069]},{"n":"Kab. Bantul","p":"DI Yogyakarta","v":[28356,31168,33694,35829,38187]},{"n":"Kab. Gunung Kidul","p":"DI Yogyakarta","v":[27304,30356,33259,35504,38330]},{"n":"Kab. Sleman","p":"DI Yogyakarta","v":[43560,47754,51339,54503,58602]},{"n":"Kota Yogyakarta","p":"DI Yogyakarta","v":[102702,113499,122954,131433,140641]},{"n":"Kab. Pacitan","p":"Jawa Timur","v":[27932,30627,33149,35096,38215]},{"n":"Kab. Ponorogo","p":"Jawa Timur","v":[22432,24094,26314,28088,30007]},{"n":"Kab. Trenggalek","p":"Jawa Timur","v":[26160,28309,30681,32726,35110]},{"n":"Kab. Tulungagung","p":"Jawa Timur","v":[36688,40069,43297,46009,49485]},{"n":"Kab. Blitar","p":"Jawa Timur","v":[30683,33285,35812,37811,40200]},{"n":"Kab. Kediri","p":"Jawa Timur","v":[25867,28035,30193,32339,34496]},{"n":"Kab. Malang","p":"Jawa Timur","v":[40057,43581,47272,50593,54521]},{"n":"Kab. Lumajang","p":"Jawa Timur","v":[29939,32384,35178,37579,40349]},{"n":"Kab. Jember","p":"Jawa Timur","v":[31781,34265,36837,39464,42357]},{"n":"Kab. Banyuwangi","p":"Jawa Timur","v":[49896,53822,58086,62086,67081]},{"n":"Kab. Bondowoso","p":"Jawa Timur","v":[27009,29217,31432,33501,35872]},{"n":"Kab. Situbondo","p":"Jawa Timur","v":[30765,33367,36190,38677,41143]},{"n":"Kab. Probolinggo","p":"Jawa Timur","v":[30708,33323,36006,38537,41409]},{"n":"Kab. Pasuruan","p":"Jawa Timur","v":[97171,105850,113683,121689,131055]},{"n":"Kab. Sidoarjo","p":"Jawa Timur","v":[100252,115389,127382,136721,145529]},{"n":"Kab. Mojokerto","p":"Jawa Timur","v":[77340,84307,91112,98011,105452]},{"n":"Kab. Jombang","p":"Jawa Timur","v":[31449,34292,36991,39553,42359]},{"n":"Kab. Nganjuk","p":"Jawa Timur","v":[25280,27583,29917,32047,34314]},{"n":"Kab. Madiun","p":"Jawa Timur","v":[26802,29110,31588,33712,36116]},{"n":"Kab. Magetan","p":"Jawa Timur","v":[29081,31275,33627,35853,38264]},{"n":"Kab. Ngawi","p":"Jawa Timur","v":[23838,25602,27619,29347,31279]},{"n":"Kab. Bojonegoro","p":"Jawa Timur","v":[64424,76507,74242,76808,78894]},{"n":"Kab. Tuban","p":"Jawa Timur","v":[54739,62059,67176,71099,75150]},{"n":"Kab. Lamongan","p":"Jawa Timur","v":[30373,33399,35726,37788,40469]},{"n":"Kab. Gresik","p":"Jawa Timur","v":[109418,122650,130527,138271,146668]},{"n":"Kab. Bangkalan","p":"Jawa Timur","v":[23148,25134,25408,26066,27588]},{"n":"Kab. Sampang","p":"Jawa Timur","v":[21064,23186,23978,24484,25531]},{"n":"Kab. Pamekasan","p":"Jawa Timur","v":[20596,22226,23842,25424,27206]},{"n":"Kab. Sumenep","p":"Jawa Timur","v":[31177,35324,37474,39215,42090]},{"n":"Kota Kediri","p":"Jawa Timur","v":[489294,522857,541068,565841,581558]},{"n":"Kota Blitar","p":"Jawa Timur","v":[47329,51593,55523,59326,63146]},{"n":"Kota Malang","p":"Jawa Timur","v":[90160,98885,107542,114722,122919]},{"n":"Kota Probolinggo","p":"Jawa Timur","v":[48406,52921,57885,61614,65483]},{"n":"Kota Pasuruan","p":"Jawa Timur","v":[40372,44303,48058,51087,54006]},{"n":"Kota Mojokerto","p":"Jawa Timur","v":[51962,56648,59061,62684,66235]},{"n":"Kota Madiun","p":"Jawa Timur","v":[73502,79817,86285,92449,98078]},{"n":"Kota Surabaya","p":"Jawa Timur","v":[204411,226080,245685,264372,283306]},{"n":"Kota Batu","p":"Jawa Timur","v":[78331,85414,93214,99487,105197]},{"n":"Kab. Pandeglang","p":"Banten","v":[23252,24696,25913,27078,28956]},{"n":"Kab. Lebak","p":"Banten","v":[22012,23617,24810,25967,27720]},{"n":"Kab. Tangerang","p":"Banten","v":[44298,48218,51538,54729,58175]},{"n":"Kab. Serang","p":"Banten","v":[48918,52957,56523,60007,63282]},{"n":"Kota Tangerang","p":"Banten","v":[78533,94428,105916,114458,122822]},{"n":"Kota Cilegon","p":"Banten","v":[251422,271349,287524,302862,322680]},{"n":"Kota Serang","p":"Banten","v":[47798,51548,55040,58498,61646]},{"n":"Kota Tangerang Selatan","p":"Banten","v":[64499,69729,75010,80182,85481]},{"n":"Kab. Jembrana","p":"Bali","v":[42382,45249,48270,51730,55648]},{"n":"Kab. Tabanan","p":"Bali","v":[47573,50978,54774,59123,63914]},{"n":"Kab. Badung","p":"Bali","v":[81198,99076,121414,132027,142344]},{"n":"Kab. Gianyar","p":"Bali","v":[49810,53645,58259,62693,68130]},{"n":"Kab. Klungkung","p":"Bali","v":[41163,44269,48260,52628,57196]},{"n":"Kab. Bangli","p":"Bali","v":[26319,28182,30256,32275,34787]},{"n":"Kab. Karangasem","p":"Bali","v":[33353,35519,37953,40233,43211]},{"n":"Kab. Buleleng","p":"Bali","v":[41893,44603,47413,50796,54993]},{"n":"Kota Denpasar","p":"Bali","v":[67754,73732,80305,86425,93247]},{"n":"Kab. Lombok Barat","p":"Nusa Tenggara Barat","v":[21095,22318,24045,25044,26514]},{"n":"Kab. Lombok Tengah","p":"Nusa Tenggara Barat","v":[16855,17991,19501,20368,21389]},{"n":"Kab. Lombok Timur","p":"Nusa Tenggara Barat","v":[15656,16519,17664,18588,19643]},{"n":"Kab. Sumbawa","p":"Nusa Tenggara Barat","v":[29156,30837,33071,34509,36333]},{"n":"Kab. Dompu","p":"Nusa Tenggara Barat","v":[30628,32152,34430,36120,38110]},{"n":"Kab. Bima","p":"Nusa Tenggara Barat","v":[22808,24133,26043,27153,28315]},{"n":"Kab. Sumbawa Barat","p":"Nusa Tenggara Barat","v":[160814,209611,193802,235091,236192]},{"n":"Kab. Lombok Utara","p":"Nusa Tenggara Barat","v":[18799,19874,21557,22874,24028]},{"n":"Kota Mataram","p":"Nusa Tenggara Barat","v":[45469,48454,51640,54382,58091]},{"n":"Kota Bima","p":"Nusa Tenggara Barat","v":[27421,28752,30901,32479,34015]},{"n":"Kab. Sumba Barat","p":"Nusa Tenggara Timur","v":[16418,17245,18279,19400,20625]},{"n":"Kab. Sumba Timur","p":"Nusa Tenggara Timur","v":[25846,27133,28733,30114,32391]},{"n":"Kab. Kupang","p":"Nusa Tenggara Timur","v":[21621,22733,24436,26499,28501]},{"n":"Kab. Timor Tengah Selatan","p":"Nusa Tenggara Timur","v":[17885,18836,19993,21219,22462]},{"n":"Kab. Timor Tengah Utara","p":"Nusa Tenggara Timur","v":[16052,16822,17778,18738,19768]},{"n":"Kab. Belu","p":"Nusa Tenggara Timur","v":[21204,22251,23732,25170,26765]},{"n":"Kab. Alor","p":"Nusa Tenggara Timur","v":[14759,15425,16416,17723,18775]},{"n":"Kab. Lembata","p":"Nusa Tenggara Timur","v":[13910,14492,15228,15975,16953]},{"n":"Kab. Flores Timur","p":"Nusa Tenggara Timur","v":[19216,19903,21046,22048,23514]},{"n":"Kab. Sikka","p":"Nusa Tenggara Timur","v":[16335,17259,18474,19873,21138]},{"n":"Kab. Ende","p":"Nusa Tenggara Timur","v":[23133,24630,26491,28061,30220]},{"n":"Kab. Ngada","p":"Nusa Tenggara Timur","v":[21418,22549,23957,25689,27065]},{"n":"Kab. Manggarai","p":"Nusa Tenggara Timur","v":[15157,15780,16724,17709,18756]},{"n":"Kab. Rote Ndao","p":"Nusa Tenggara Timur","v":[22513,23654,24793,25603,27904]},{"n":"Kab. Manggarai Barat","p":"Nusa Tenggara Timur","v":[13871,14621,15712,16663,17758]},{"n":"Kab. Sumba Tengah","p":"Nusa Tenggara Timur","v":[14162,14698,15354,16536,17674]},{"n":"Kab. Sumba Barat Daya","p":"Nusa Tenggara Timur","v":[12591,13242,13982,14890,15759]},{"n":"Kab. Nagekeo","p":"Nusa Tenggara Timur","v":[14536,15189,16061,17038,17884]},{"n":"Kab. Manggarai Timur","p":"Nusa Tenggara Timur","v":[12192,12789,13516,14367,15228]},{"n":"Kab. Sabu Raijua","p":"Nusa Tenggara Timur","v":[16041,16824,17445,18699,19967]},{"n":"Kab. Malaka","p":"Nusa Tenggara Timur","v":[15752,16681,17919,19482,20661]},{"n":"Kota Kupang","p":"Nusa Tenggara Timur","v":[54282,57199,61257,65003,69462]},{"n":"Kab. Sambas","p":"Kalimantan Barat","v":[35153,38028,40404,43614,46816]},{"n":"Kab. Bengkayang","p":"Kalimantan Barat","v":[32137,35051,37281,40333,43286]},{"n":"Kab. Landak","p":"Kalimantan Barat","v":[28870,31314,33087,35713,38350]},{"n":"Kab. Mempawah","p":"Kalimantan Barat","v":[29807,32239,35408,39506,43156]},{"n":"Kab. Sanggau","p":"Kalimantan Barat","v":[44200,47955,48675,51965,56955]},{"n":"Kab. Ketapang","p":"Kalimantan Barat","v":[53555,58662,59490,65207,73599]},{"n":"Kab. Sintang","p":"Kalimantan Barat","v":[36947,40098,42434,46169,50214]},{"n":"Kab. Kapuas Hulu","p":"Kalimantan Barat","v":[43337,47056,50092,53963,57839]},{"n":"Kab. Sekadau","p":"Kalimantan Barat","v":[33339,36355,38714,42389,45650]},{"n":"Kab. Melawi","p":"Kalimantan Barat","v":[24277,26209,27743,29739,31658]},{"n":"Kab. Kayong Utara","p":"Kalimantan Barat","v":[35333,38140,40464,43166,46487]},{"n":"Kab. Kubu Raya","p":"Kalimantan Barat","v":[50546,56227,59892,64206,67996]},{"n":"Kota Pontianak","p":"Kalimantan Barat","v":[60540,66164,70892,75420,80795]},{"n":"Kota Singkawang","p":"Kalimantan Barat","v":[45668,49229,52412,56062,59799]},{"n":"Kab. Kotawaringin Barat","p":"Kalimantan Tengah","v":[86751,94967,102068,110324,121218]},{"n":"Kab. Kotawaringin Timur","p":"Kalimantan Tengah","v":[68493,76092,78842,84747,92974]},{"n":"Kab. Kapuas","p":"Kalimantan Tengah","v":[45070,54742,56351,58512,62149]},{"n":"Kab. Barito Selatan","p":"Kalimantan Tengah","v":[50535,60921,62765,65217,68431]},{"n":"Kab. Barito Utara","p":"Kalimantan Tengah","v":[67518,90184,88282,86347,88608]},{"n":"Kab. Sukamara","p":"Kalimantan Tengah","v":[76914,83413,88878,95798,102440]},{"n":"Kab. Lamandau","p":"Kalimantan Tengah","v":[66406,72789,73637,79697,84143]},{"n":"Kab. Seruyan","p":"Kalimantan Tengah","v":[59863,64237,66898,72204,77173]},{"n":"Kab. Katingan","p":"Kalimantan Tengah","v":[55038,59739,63496,67913,73108]},{"n":"Kab. Pulang Pisau","p":"Kalimantan Tengah","v":[44054,47232,50626,54850,58660]},{"n":"Kab. Gunung Mas","p":"Kalimantan Tengah","v":[52196,58057,60349,67075,72365]},{"n":"Kab. Barito Timur","p":"Kalimantan Tengah","v":[69511,94494,92864,91576,94050]},{"n":"Kab. Murung Raya","p":"Kalimantan Tengah","v":[78903,113198,106748,99914,102963]},{"n":"Kota Palangka Raya","p":"Kalimantan Tengah","v":[66158,72839,79038,84614,89938]},{"n":"Kab. Tanah Laut","p":"Kalimantan Selatan","v":[43502,53319,55872,58233,61730]},{"n":"Kab. Kota Baru","p":"Kalimantan Selatan","v":[80388,99498,103069,108005,115045]},{"n":"Kab. Banjar","p":"Kalimantan Selatan","v":[31308,36189,38265,40027,41993]},{"n":"Kab. Barito Kuala","p":"Kalimantan Selatan","v":[28971,30692,32389,34290,36345]},{"n":"Kab. Tapin","p":"Kalimantan Selatan","v":[49019,65826,69702,72420,76197]},{"n":"Kab. Hulu Sungai Selatan","p":"Kalimantan Selatan","v":[30944,36208,38839,41450,43972]},{"n":"Kab. Hulu Sungai Tengah","p":"Kalimantan Selatan","v":[28339,30152,32285,34849,37586]},{"n":"Kab. Hulu Sungai Utara","p":"Kalimantan Selatan","v":[22931,24459,26132,27910,29879]},{"n":"Kab. Tabalong","p":"Kalimantan Selatan","v":[77830,112270,117748,122313,126520]},{"n":"Kab. Tanah Bumbu","p":"Kalimantan Selatan","v":[69333,95160,99813,104302,110383]},{"n":"Kab. Balangan","p":"Kalimantan Selatan","v":[93645,148029,153372,157579,163763]},{"n":"Kota Banjarmasin","p":"Kalimantan Selatan","v":[52333,57991,63095,68285,73747]},{"n":"Kota Banjar Baru","p":"Kalimantan Selatan","v":[38867,44860,49712,53088,55615]},{"n":"Kab. Paser","p":"Kalimantan Timur","v":[193818,271259,208429,193171,196723]},{"n":"Kab. Kutai Barat","p":"Kalimantan Timur","v":[184710,247400,222078,222048,229647]},{"n":"Kab. Kutai Kartanegara","p":"Kalimantan Timur","v":[241067,322082,270713,259188,249111]},{"n":"Kab. Kutai Timur","p":"Kalimantan Timur","v":[310292,471269,369418,344492,325075]},{"n":"Kab. Berau","p":"Kalimantan Timur","v":[171494,236227,198534,194080,193391]},{"n":"Kab. Penajam Paser Utara","p":"Kalimantan Timur","v":[55871,69503,87062,87148,63809]},{"n":"Kab. Mahakam Ulu","p":"Kalimantan Timur","v":[90432,95117,100944,110202,118650]},{"n":"Kota Balikpapan","p":"Kalimantan Timur","v":[160304,181286,201637,214111,233398]},{"n":"Kota Samarinda","p":"Kalimantan Timur","v":[85219,98877,104969,114693,123222]},{"n":"Kota Bontang","p":"Kalimantan Timur","v":[320304,344148,366463,363369,371195]},{"n":"Kab. Malinau","p":"Kalimantan Utara","v":[154010,211913,218442,209057,215362]},{"n":"Kab. Bulungan","p":"Kalimantan Utara","v":[131808,156183,162192,160813,169985]},{"n":"Kab. Tana Tidung","p":"Kalimantan Utara","v":[258113,330501,337976,335175,338606]},{"n":"Kab. Nunukan","p":"Kalimantan Utara","v":[147671,195654,204595,192001,199721]},{"n":"Kota Tarakan","p":"Kalimantan Utara","v":[170703,190207,208143,221044,233098]},{"n":"Kab. Bolaang Mongondow","p":"Sulawesi Utara","v":[35782,38652,41312,44737,48346]},{"n":"Kab. Minahasa","p":"Sulawesi Utara","v":[53486,58154,62878,68017,73719]},{"n":"Kab. Kepulauan Sangihe","p":"Sulawesi Utara","v":[34209,37031,39831,43187,47327]},{"n":"Kab. Kepulauan Talaud","p":"Sulawesi Utara","v":[25416,27324,29213,31516,34231]},{"n":"Kab. Minahasa Selatan","p":"Sulawesi Utara","v":[40353,44092,48049,52242,56624]},{"n":"Kab. Minahasa Utara","p":"Sulawesi Utara","v":[69241,75210,80975,87299,94921]},{"n":"Kab. Bolaang Mongondow Utara","p":"Sulawesi Utara","v":[32496,35076,37891,40645,43741]},{"n":"Kab. Siau Tagulandang Biaro","p":"Sulawesi Utara","v":[36341,39214,42430,45866,49779]},{"n":"Kab. Minahasa Tenggara","p":"Sulawesi Utara","v":[48005,51984,56305,61067,65786]},{"n":"Kab. Bolaang Mongondow Selatan","p":"Sulawesi Utara","v":[32590,35122,37825,40801,43721]},{"n":"Kab. Bolaang Mongondow Timur","p":"Sulawesi Utara","v":[36448,39207,41772,45221,49812]},{"n":"Kota Manado","p":"Sulawesi Utara","v":[86999,96194,105882,115143,124429]},{"n":"Kota Bitung","p":"Sulawesi Utara","v":[82191,89704,97545,105343,115416]},{"n":"Kota Tomohon","p":"Sulawesi Utara","v":[45295,49266,52853,56563,60930]},{"n":"Kota Kotamobagu","p":"Sulawesi Utara","v":[32295,34939,37576,40400,43302]},{"n":"Kab. Banggai Kepulauan","p":"Sulawesi Tengah","v":[34117,37376,39937,43165,46829]},{"n":"Kab. Banggai","p":"Sulawesi Tengah","v":[84300,110263,101843,107883,116747]},{"n":"Kab. Morowali","p":"Sulawesi Tengah","v":[601783,876421,927244,1003150,1072574]},{"n":"Kab. Poso","p":"Sulawesi Tengah","v":[40246,43700,46538,50139,53881]},{"n":"Kab. Donggala","p":"Sulawesi Tengah","v":[41481,45101,48834,53143,58102]},{"n":"Kab. Toli-Toli","p":"Sulawesi Tengah","v":[39195,42263,44749,47349,50421]},{"n":"Kab. Buol","p":"Sulawesi Tengah","v":[41783,45153,47736,51137,56128]},{"n":"Kab. Parigi Moutong","p":"Sulawesi Tengah","v":[41504,44628,47645,51059,54892]},{"n":"Kab. Tojo Una-Una","p":"Sulawesi Tengah","v":[35928,38143,40319,43054,46555]},{"n":"Kab. Sigi","p":"Sulawesi Tengah","v":[37417,40254,42649,46534,49733]},{"n":"Kab. Banggai Laut","p":"Sulawesi Tengah","v":[35470,38854,41303,43549,47112]},{"n":"Kab. Morowali Utara","p":"Sulawesi Tengah","v":[107122,169774,209710,236449,292019]},{"n":"Kota Palu","p":"Sulawesi Tengah","v":[69334,74372,79452,83868,88383]},{"n":"Kab. Kepulauan Selayar","p":"Sulawesi Selatan","v":[49475,53563,56569,58447,62113]},{"n":"Kab. Bulukumba","p":"Sulawesi Selatan","v":[35968,38656,41904,44477,47114]},{"n":"Kab. Bantaeng","p":"Sulawesi Selatan","v":[50787,60565,62783,65483,68614]},{"n":"Kab. Jeneponto","p":"Sulawesi Selatan","v":[27276,28739,29318,31168,34111]},{"n":"Kab. Takalar","p":"Sulawesi Selatan","v":[36578,39728,41138,42358,44810]},{"n":"Kab. Gowa","p":"Sulawesi Selatan","v":[30361,32496,35517,37773,41352]},{"n":"Kab. Sinjai","p":"Sulawesi Selatan","v":[46991,51131,55286,59071,64462]},{"n":"Kab. Maros","p":"Sulawesi Selatan","v":[47959,58546,64691,69210,71360]},{"n":"Kab. Pangkajene dan Kepulauan","p":"Sulawesi Selatan","v":[79123,86582,91862,96355,104696]},{"n":"Kab. Barru","p":"Sulawesi Selatan","v":[43465,47560,49966,52275,56391]},{"n":"Kab. Bone","p":"Sulawesi Selatan","v":[48668,53481,57024,60261,64758]},{"n":"Kab. Soppeng","p":"Sulawesi Selatan","v":[52666,57953,62581,67261,72363]},{"n":"Kab. Wajo","p":"Sulawesi Selatan","v":[58551,63431,63612,66711,73458]},{"n":"Kab. Sidenreng Rappang","p":"Sulawesi Selatan","v":[47337,51372,55514,59305,65147]},{"n":"Kab. Pinrang","p":"Sulawesi Selatan","v":[53258,57408,59967,62766,66894]},{"n":"Kab. Enrekang","p":"Sulawesi Selatan","v":[36031,39050,41149,44006,46930]},{"n":"Kab. Luwu","p":"Sulawesi Selatan","v":[48299,53380,57358,59728,63453]},{"n":"Kab. Tana Toraja","p":"Sulawesi Selatan","v":[28532,30572,32382,34739,36984]},{"n":"Kab. Luwu Utara","p":"Sulawesi Selatan","v":[44198,48655,53450,58310,64542]},{"n":"Kab. Luwu Timur","p":"Sulawesi Selatan","v":[78707,93364,99490,97202,99873]},{"n":"Kab. Toraja Utara","p":"Sulawesi Selatan","v":[39118,42069,45028,47726,50626]},{"n":"Kota Makassar","p":"Sulawesi Selatan","v":[132678,144604,155952,165959,177335]},{"n":"Kota Parepare","p":"Sulawesi Selatan","v":[51026,55783,58776,61969,65017]},{"n":"Kota Palopo","p":"Sulawesi Selatan","v":[46627,51453,54470,56647,59373]},{"n":"Kab. Buton","p":"Sulawesi Tenggara","v":[34615,38779,42115,43410,45021]},{"n":"Kab. Muna","p":"Sulawesi Tenggara","v":[33777,37319,39227,41623,43630]},{"n":"Kab. Konawe","p":"Sulawesi Tenggara","v":[44344,53862,67881,75702,86436]},{"n":"Kab. Kolaka","p":"Sulawesi Tenggara","v":[114671,129185,145097,153413,162543]},{"n":"Kab. Konawe Selatan","p":"Sulawesi Tenggara","v":[40441,45662,50812,53949,57453]},{"n":"Kab. Bombana","p":"Sulawesi Tenggara","v":[45227,50030,54123,56988,59787]},{"n":"Kab. Wakatobi","p":"Sulawesi Tenggara","v":[41758,45725,49534,51916,54105]},{"n":"Kab. Kolaka Utara","p":"Sulawesi Tenggara","v":[65670,70717,77085,82701,87499]},{"n":"Kab. Buton Utara","p":"Sulawesi Tenggara","v":[50900,55830,58724,61238,64715]},{"n":"Kab. Konawe Utara","p":"Sulawesi Tenggara","v":[61689,67898,72796,77302,81765]},{"n":"Kab. Kolaka Timur","p":"Sulawesi Tenggara","v":[39570,42536,44726,48117,50590]},{"n":"Kab. Konawe Kepulauan","p":"Sulawesi Tenggara","v":[39027,41227,44040,49696,53970]},{"n":"Kab. Muna Barat","p":"Sulawesi Tenggara","v":[32472,35048,37935,38933,40657]},{"n":"Kab. Buton Tengah","p":"Sulawesi Tenggara","v":[21900,23754,25330,26136,27739]},{"n":"Kab. Buton Selatan","p":"Sulawesi Tenggara","v":[31084,33836,36084,37815,39990]},{"n":"Kota Kendari","p":"Sulawesi Tenggara","v":[67484,73972,77591,80970,85161]},{"n":"Kota Baubau","p":"Sulawesi Tenggara","v":[59694,65425,69346,72416,75897]},{"n":"Kab. Boalemo","p":"Gorontalo","v":[38886,40940,43517,45564,48364]},{"n":"Kab. Gorontalo","p":"Gorontalo","v":[34566,37136,39696,41742,44738]},{"n":"Kab. Pohuwato","p":"Gorontalo","v":[47678,50291,53444,55804,61035]},{"n":"Kab. Bone Bolango","p":"Gorontalo","v":[29667,31720,33809,35453,37567]},{"n":"Kab. Gorontalo Utara","p":"Gorontalo","v":[28382,29976,31723,33248,35474]},{"n":"Kota Gorontalo","p":"Gorontalo","v":[44838,48089,51309,54117,57693]},{"n":"Kab. Majene","p":"Sulawesi Barat","v":[29513,30974,32909,35320,37831]},{"n":"Kab. Polewali Mandar","p":"Sulawesi Barat","v":[28575,30332,32298,35453,38064]},{"n":"Kab. Mamasa","p":"Sulawesi Barat","v":[18918,19606,20490,21884,23302]},{"n":"Kab. Mamuju","p":"Sulawesi Barat","v":[43916,46537,49258,53961,58093]},{"n":"Kab. Pasang Kayu","p":"Sulawesi Barat","v":[64619,67488,72242,76843,89158]},{"n":"Kab. Mamuju Tengah","p":"Sulawesi Barat","v":[25934,27266,28531,31422,35120]},{"n":"Kab. Kepulauan Tanimbar","p":"Maluku","v":[22951,24851,26366,27728,29053]},{"n":"Kab. Maluku Tenggara","p":"Maluku","v":[28022,30598,32893,34920,36623]},{"n":"Kab. Maluku Tengah","p":"Maluku","v":[21350,23154,24680,25983,27364]},{"n":"Kab. Buru","p":"Maluku","v":[18474,19985,21201,22256,23232]},{"n":"Kab. Kepulauan Aru","p":"Maluku","v":[35360,38309,41319,43620,46189]},{"n":"Kab. Seram Bagian Barat","p":"Maluku","v":[14742,15995,17031,18037,18857]},{"n":"Kab. Seram Bagian Timur","p":"Maluku","v":[22669,25530,24233,25034,25244]},{"n":"Kab. Maluku Barat Daya","p":"Maluku","v":[23960,26874,33433,36666,38809]},{"n":"Kab. Buru Selatan","p":"Maluku","v":[19431,20917,22229,23340,24203]},{"n":"Kota Ambon","p":"Maluku","v":[44406,48359,51568,54699,57375]},{"n":"Kota Tual","p":"Maluku","v":[29401,32185,34994,36846,38387]},{"n":"Kab. Halmahera Barat","p":"Maluku Utara","v":[17556,18828,19677,21359,22782]},{"n":"Kab. Halmahera Tengah","p":"Maluku Utara","v":[166922,359993,479057,532124,870960]},{"n":"Kab. Kepulauan Sula","p":"Maluku Utara","v":[24678,26880,28330,30966,32723]},{"n":"Kab. Halmahera Selatan","p":"Maluku Utara","v":[43312,55856,69904,83147,114370]},{"n":"Kab. Halmahera Utara","p":"Maluku Utara","v":[30033,32069,32904,34521,37306]},{"n":"Kab. Halmahera Timur","p":"Maluku Utara","v":[42187,44192,54984,55568,83278]},{"n":"Kab. Pulau Morotai","p":"Maluku Utara","v":[21716,22893,23752,25434,27112]},{"n":"Kab. Pulau Taliabu","p":"Maluku Utara","v":[29215,31470,32049,34281,36586]},{"n":"Kota Ternate","p":"Maluku Utara","v":[52960,58568,64160,70890,76451]},{"n":"Kota Tidore Kepulauan","p":"Maluku Utara","v":[26144,28091,29199,32017,33446]},{"n":"Kab. Fak-Fak","p":"Papua Barat","v":[61904,63832,65475,69984,71791]},{"n":"Kab. Kaimana","p":"Papua Barat","v":[42316,42601,44506,46446,47204]},{"n":"Kab. Teluk Wondama","p":"Papua Barat","v":[36731,37975,39290,40739,41280]},{"n":"Kab. Teluk Bintuni","p":"Papua Barat","v":[356172,392066,438847,574984,621837]},{"n":"Kab. Manokwari","p":"Papua Barat","v":[50311,51359,52757,55260,57893]},{"n":"Kab. Sorong Selatan","p":"Papua Barat Daya","v":[36903,38865,40752,41485,42834]},{"n":"Kab. Sorong","p":"Papua Barat Daya","v":[93896,95763,98547,101149,107902]},{"n":"Kab. Raja Ampat","p":"Papua Barat Daya","v":[52575,60753,60653,58576,60188]},{"n":"Kab. Tambrauw","p":"Papua Barat Daya","v":[8393,8594,8906,9726,10330]},{"n":"Kab. Maybrat","p":"Papua Barat Daya","v":[17135,17451,17569,18161,18437]},{"n":"Kab. Manokwari Selatan","p":"Papua Barat","v":[23540,23886,24372,26227,26942]},{"n":"Kab. Pegunungan Arfak","p":"Papua Barat","v":[6236,7026,7583,8662,9122]},{"n":"Kota Sorong","p":"Papua Barat Daya","v":[54288,55567,57043,57358,59638]},{"n":"Kab. Merauke","p":"Papua Selatan","v":[70507,74154,80469,84338,90054]},{"n":"Kab. Jayawijaya","p":"Papua Pegunungan","v":[31017,33310,36504,40727,42841]},{"n":"Kab. Jayapura","p":"Papua","v":[101346,107440,111937,117896,123134]},{"n":"Kab. Nabire","p":"Papua Tengah","v":[70002,73169,77708,85204,91096]},{"n":"Kab. Kepulauan Yapen","p":"Papua","v":[38810,40365,42464,44479,46062]},{"n":"Kab. Biak Numfor","p":"Papua","v":[40463,42607,45065,46470,47999]},{"n":"Kab. Paniai","p":"Papua Tengah","v":[19794,20646,21552,22570,23439]},{"n":"Kab. Puncak Jaya","p":"Papua Tengah","v":[6189,6289,6464,7077,7521]},{"n":"Kab. Mimika","p":"Papua Tengah","v":[301800,345374,391756,446333,395261]},{"n":"Kab. Boven Digoel","p":"Papua Selatan","v":[75750,76593,79055,83796,87893]},{"n":"Kab. Mappi","p":"Papua Selatan","v":[28372,30175,31849,33262,35132]},{"n":"Kab. Asmat","p":"Papua Selatan","v":[24147,25321,27316,28616,30467]},{"n":"Kab. Yahukimo","p":"Papua Pegunungan","v":[7361,7450,7900,8478,9100]},{"n":"Kab. Pegunungan Bintang","p":"Papua Pegunungan","v":[26311,27369,28924,30334,32347]},{"n":"Kab. Tolikara","p":"Papua Pegunungan","v":[7165,7512,8223,8830,9294]},{"n":"Kab. Sarmi","p":"Papua","v":[74203,78434,83467,88756,92898]},{"n":"Kab. Keerom","p":"Papua","v":[49227,51026,53337,56367,58532]},{"n":"Kab. Waropen","p":"Papua","v":[61602,66364,65591,68452,71600]},{"n":"Kab. Supiori","p":"Papua","v":[47426,48542,48805,50794,52420]},{"n":"Kab. Mamberamo Raya","p":"Papua","v":[49231,52101,55479,58533,60288]},{"n":"Kab. Nduga","p":"Papua Pegunungan","v":[12433,12845,13531,14377,15107]},{"n":"Kab. Lanny Jaya","p":"Papua Pegunungan","v":[10136,10591,11309,11955,13063]},{"n":"Kab. Mamberamo Tengah","p":"Papua Pegunungan","v":[24583,24700,26632,28976,30731]},{"n":"Kab. Yalimo","p":"Papua Pegunungan","v":[13100,13702,14606,15773,16823]},{"n":"Kab. Puncak","p":"Papua Tengah","v":[12977,13597,13774,14455,15005]},{"n":"Kab. Dogiyai","p":"Papua Tengah","v":[11924,11914,12512,13157,13572]},{"n":"Kab. Intan Jaya","p":"Papua Tengah","v":[9481,9751,9915,10187,10644]},{"n":"Kab. Deiyai","p":"Papua Tengah","v":[14814,15316,15907,16593,17006]},{"n":"Kota Jayapura","p":"Papua","v":[82241,86470,91451,94848,99063]}]};
+const MAP = [{"n":"Sulawesi Tengah","d":"M531.7 147.4l0.7 6.0l-3.6 4.7l5.6 2.3l-0.3 2.3l4.4 5.2l-0.0 5.1l4.4 -1.5l4.7 2.0l2.8 -1.3l7.0 5.7l8.0 0.8l-0.0 2.6l7.9 0.3l6.9 4.9l-2.5 5.6l12.9 4.4l1.1 3.8l3.8 -2.0l-5.1 -3.3l1.5 -2.3l-6.8 -4.4l-4.0 -9.3l-6.0 -2.8l-3.0 -5.6l-1.6 1.6l-0.8 -4.2l8.1 3.3l3.7 -5.4l11.9 -4.4l9.0 -12.1l6.5 -2.3l3.4 4.3l2.1 -0.0l1.9 -6.9l-3.8 -3.0l-4.5 -0.3l-6.8 2.5l4.7 1.7l-16.6 0.7l-2.2 3.8l-3.4 0.8l-5.0 -1.0l-1.9 -3.2l-6.5 5.6l-5.2 8.1l-6.0 -1.8l-3.2 1.3l-3.7 -9.1l-2.1 -1.6l-2.2 0.9l-4.9 -6.0l-1.1 -13.4l2.2 -5.9l5.2 -5.9l6.0 -1.3l9.5 2.7l5.6 -1.7l-0.2 -2.2l-3.6 -2.0l1.1 -2.7l14.1 -4.4l3.3 1.8l3.9 -2.8l-14.1 -0.6l-2.8 -2.6l1.0 -2.6l-4.6 1.7l-7.7 -2.7l-2.1 0.7l0.0 6.5l-3.8 1.9l-1.0 4.0l-4.2 -0.7l-2.5 -4.3l-1.2 4.2l-4.2 1.8l0.1 4.4l-3.5 1.2l0.4 5.3l-2.5 -0.2l2.1 3.3l-0.8 3.8l-5.2 -1.9l1.5 2.3l3.0 0.4l-1.1 7.7l2.6 8.2l-3.4 -4.4ZM577.7 141.4l1.5 -1.7l3.3 1.0l0.6 -2.1l-3.5 -0.3ZM584.4 138.1l1.8 -1.6l-4.4 0.7ZM593.3 136.9l-0.0 -1.8l-3.4 -1.5ZM604.2 163.8l5.6 -6.6l1.0 4.7l-1.9 1.9l3.1 1.0l0.3 -4.5l4.4 1.6l2.1 -5.2l-4.2 -1.1l-2.6 3.5l-1.3 -5.2l-6.0 0.7l-2.7 5.8ZM617.4 166.1l2.7 -0.2l-1.5 -4.6Z"},{"n":"Sulawesi Barat","d":"M531.7 147.4l-5.6 9.3l-0.5 9.1l1.8 3.8l-3.3 3.0l-1.6 10.4l-4.7 4.0l-2.2 -0.8l-1.4 3.6l0.3 1.8l2.4 0.3l-2.2 4.4l2.8 9.7l1.9 0.8l6.9 -3.0l3.6 1.7l-1.9 -6.2l5.4 -2.3l-1.2 -7.8l3.7 -0.9l0.3 -2.9l-1.8 -6.6l4.2 -5.7l0.0 -5.1l-4.4 -5.2l0.3 -2.3l-5.6 -2.3l3.6 -4.7Z"},{"n":"Sulawesi Selatan","d":"M558.2 284.2l-3.3 -2.5l0.3 2.7ZM550.9 264.0l0.9 6.5l1.9 -9.4l-1.6 -6.3ZM529.8 205.3l-0.5 4.6l3.9 5.5l0.1 7.6l-3.4 9.5l0.9 3.8l-3.7 8.8l1.4 5.1l6.2 3.1l4.9 -3.4l4.4 0.9l4.0 -1.8l3.3 2.2l-4.2 -10.2l0.8 -6.0l3.2 -4.6l-2.3 -5.1l-0.2 -7.3l2.2 -7.6l-0.4 -10.5l-3.6 -2.3l-1.5 -4.1l12.2 -7.7l7.2 1.7l-1.5 3.6l1.6 -2.0l6.7 5.3l6.1 -2.5l2.5 -5.6l-6.9 -4.9l-7.9 -0.3l0.0 -2.6l-8.0 -0.8l-7.0 -5.7l-2.8 1.3l-4.7 -2.0l-4.4 1.5l-4.2 5.7l1.8 6.6l-0.3 2.9l-3.7 0.9l1.2 7.8l-5.4 2.3Z"},{"n":"Papua Tengah","d":"M866.1 221.7l7.0 4.7l15.7 0.6l38.2 15.8l4.8 -9.5l-2.8 -2.9l3.4 -1.2l-2.0 -1.9l3.0 -6.2l-2.0 1.2l-0.6 -1.6l-2.6 0.3l0.0 -2.1l4.1 1.5l1.7 -6.4l7.7 -1.6l-2.1 -1.1l0.2 -3.2l-4.2 -0.9l0.1 -7.5l-1.6 -1.2l0.8 -4.4l-3.8 2.1l-11.1 -0.3l-5.5 1.4l-2.3 4.0l-1.1 -0.7l2.0 -1.6l-3.0 -1.2l1.2 5.1l-1.3 0.3l-1.0 -3.3l-2.3 0.3l-1.7 -2.8l-0.0 1.9l-2.1 0.6l0.1 -4.5l-5.1 -0.4l-2.9 -5.0l-4.2 -2.1l-1.9 5.6l-9.1 8.6l-8.6 0.6l-5.5 -2.9l-0.3 -7.7l-3.5 1.5l-0.5 -4.6l-1.7 1.1l0.5 7.0l2.6 5.1l4.2 1.7l2.1 3.5l4.0 -0.1l-3.9 2.7l1.6 5.4Z"},{"n":"Papua Barat","d":"M832.4 218.4l2.6 3.3l2.2 -0.2ZM840.9 184.7l-0.7 1.2l2.0 1.0ZM816.2 176.9l0.9 1.9l7.0 0.1l4.8 -2.1l9.6 0.8l7.2 -3.3l1.1 3.5l-1.1 1.8l0.5 3.4l-3.2 -0.7l-1.3 4.8l-2.3 -0.1l-0.4 -2.7l-5.0 3.5l-0.8 -4.1l-3.5 -2.1l-10.5 8.5l-3.0 -2.4l-7.8 -0.9l-6.1 2.6l2.3 0.2l-1.2 1.0l1.9 2.9l4.3 -0.7l4.0 2.2l4.2 6.2l3.1 -1.2l0.2 4.0l2.6 2.3l-4.5 2.9l4.0 8.7l7.3 -0.2l4.5 -4.6l-1.0 -3.7l4.1 -3.5l-2.2 -3.4l3.0 0.9l0.4 -6.4l4.1 -4.0l0.8 2.4l-4.6 4.3l0.8 3.5l-1.7 1.6l1.5 4.2l2.7 1.2l0.4 -3.7l2.3 6.2l4.2 -2.2l1.1 1.9l-1.6 1.6l4.0 3.1l-0.7 -2.2l1.7 0.4l0.0 -1.5l3.4 3.3l3.7 -2.7l6.2 0.6l-6.6 0.8l0.9 1.9l-1.6 1.1l5.6 2.9l4.5 -6.2l-1.6 -5.4l3.9 -2.7l-4.0 0.1l-2.1 -3.5l-4.2 -1.7l-2.6 -5.1l-0.5 -7.0l1.7 -1.1l-0.4 -5.5l-2.4 -1.2l-1.6 9.0l-7.5 -15.3l-1.1 -10.6l4.5 -7.4l-5.8 -8.1l2.7 -2.0l-3.6 -3.3l-10.6 0.5l-1.2 9.5l-3.9 0.1l-5.0 3.7l-2.3 -1.4l-3.9 12.3l-2.3 1.3l1.4 3.5ZM843.1 181.5l-2.2 0.7l2.9 0.6ZM845.4 179.7l-2.1 0.8l3.1 0.6ZM850.7 170.7l1.4 -3.7l-2.0 1.8Z"},{"n":"Gorontalo","d":"M570.5 118.6l4.1 -1.6l6.3 2.8l12.8 -2.2l14.5 0.3l4.5 4.0l4.5 0.0l1.3 -5.6l-5.7 -2.7l-0.1 -2.3l-3.3 -2.7l-4.0 -0.7l-2.4 3.0l-8.2 -4.6l-5.6 -0.2l-3.9 2.8l-3.3 -1.8l-14.1 4.4l-1.1 2.7l3.6 2.0Z"},{"n":"Riau","d":"M108.8 112.3l2.3 1.6l-1.9 1.4l1.7 4.7l4.0 0.0l0.1 2.1l4.8 2.7l3.4 -0.8l-1.4 3.1l1.9 0.8l-2.6 2.1l2.2 6.4l3.2 -0.6l1.6 4.1l16.5 10.3l3.5 -2.1l6.4 0.8l7.7 4.5l8.1 -8.1l7.6 1.0l1.9 -1.5l-0.4 -4.6l7.8 -3.8l-7.0 -3.5l3.5 -3.9l4.3 0.1l-2.2 -6.8l-8.4 -5.3l-4.7 3.5l-4.3 -7.2l-7.6 -0.6l-3.2 -1.3l-4.2 -4.3l-1.8 -8.3l-8.4 -6.2l-8.0 -1.2l-2.0 -7.2l-5.6 -5.4l-6.0 0.3l-0.2 4.2l-4.3 -1.5l-3.8 -3.6l-1.6 -5.0l1.1 7.1l-2.0 9.0l2.4 1.2l1.0 5.2l-8.3 3.1l2.5 4.6l-1.0 7.6ZM161.0 112.2l6.3 -0.6l3.6 2.4l0.8 -2.1l-7.0 -5.3l-7.1 2.8l0.6 1.4ZM168.0 107.9l5.6 2.5l-5.7 -6.0l-3.4 -0.6l-2.5 3.0l2.7 -0.4ZM159.2 107.6l2.6 -0.6l-1.5 -2.7l-1.6 1.0ZM153.4 101.8l1.1 5.2l2.5 2.0l2.0 -0.9l-1.0 -2.6l1.0 -3.6l-4.6 -3.9l-1.4 0.4ZM151.1 97.0l3.6 0.6l4.9 3.7l-1.1 -5.6l-10.0 -1.7ZM135.9 89.2l2.3 2.5l4.0 -0.9l1.6 -4.3l-1.8 -3.4l-6.5 1.6ZM174.8 117.6l2.1 -1.7l-2.1 -2.3l-1.5 2.9Z"},{"n":"Papua Selatan","d":"M952.0 306.6l-3.1 0.5l-2.5 4.0l7.3 0.7ZM928.0 312.5l15.7 -1.2l5.4 -4.6l4.9 -1.5l-0.3 -3.8l2.1 -1.1l1.9 -6.2l-7.5 -4.4l-11.2 2.2l-7.7 8.4l-4.4 9.8l-0.5 2.6ZM948.4 276.1l0.5 2.7l2.6 -0.8ZM949.6 273.6l-0.8 2.0l3.8 2.3l2.1 -0.6l-2.1 -0.1l-0.7 -2.2ZM927.1 242.8l1.2 3.4l2.8 -0.5l5.7 4.0l-1.7 1.3l0.5 2.9l4.6 2.6l3.1 11.0l8.8 7.7l0.1 1.8l2.6 0.4l-0.2 1.0l-8.2 1.9l3.1 3.1l-0.5 3.4l9.3 7.4l-2.1 6.3l-2.3 1.6l0.4 2.8l-2.0 1.3l1.6 3.0l6.5 -3.6l2.9 2.4l13.3 -2.3l20.5 21.4l2.9 0.9l0.0 -48.7l-2.3 -0.6l-1.5 -3.9l3.4 -7.9l0.0 -21.3l-13.4 -2.9l-3.3 -3.6l-3.8 0.0l1.3 2.2l-1.6 0.6l-1.4 -1.9l-0.9 2.8l-2.7 -1.2l2.1 0.9l1.5 -3.2l-19.9 -1.6l1.9 -5.3l-2.5 2.3l-4.3 -3.2l-5.8 -0.1l-0.4 2.1l-3.7 0.4l-1.6 -3.1l-2.9 1.0l-2.3 -3.2l-7.0 1.8l2.8 2.9Z"},{"n":"DI Yogyakarta","d":"M323.2 301.0l18.1 6.9l-1.7 -3.9l0.7 -4.5l-6.4 -1.1l-1.0 -4.9l-3.7 3.5l-3.5 -0.6Z"},{"n":"Sumatera Barat","d":"M89.1 164.7l-8.0 -16.0l-4.9 1.1l-1.9 5.2l5.0 9.1l6.5 4.2l2.6 -0.3l-0.6 -3.4l1.3 2.3ZM107.6 190.8l2.1 -1.9l-5.4 -5.2l0.9 7.2ZM100.8 179.2l-2.6 -5.0l-2.9 -0.5l0.9 5.1l5.7 2.3ZM110.5 195.5l4.5 6.5l-1.9 -3.9l1.9 -0.5l-0.2 -2.9l-5.8 -4.9ZM108.8 112.3l-7.5 -2.8l-0.1 4.2l2.9 3.3l-1.2 1.6l-8.6 -1.5l-7.5 6.8l4.2 -0.0l8.1 5.4l2.0 6.1l11.1 12.2l1.5 9.0l3.6 1.4l1.6 6.0l5.0 7.3l-1.0 5.1l4.3 6.6l5.9 -4.1l-3.5 -13.2l7.5 -0.2l4.4 -3.9l0.4 -4.9l4.0 -3.1l-1.3 -3.4l-16.5 -10.3l-1.6 -4.1l-3.2 0.6l-2.2 -6.4l2.6 -2.1l-1.9 -0.8l1.4 -3.1l-3.4 0.8l-4.8 -2.7l-0.1 -2.1l-4.0 -0.0l-1.7 -4.7l1.9 -1.4Z"},{"n":"DKI Jakarta","d":"M251.6 261.8l-0.8 1.8l2.0 3.1l3.0 0.7l1.1 -5.7Z"},{"n":"Maluku","d":"M718.9 309.5l2.1 -0.1l-0.3 -1.3l-2.8 -0.1ZM717.0 308.6l1.6 -1.8l-7.8 -1.0l1.1 2.0ZM668.0 303.6l5.8 -2.6l8.6 1.9l1.9 -3.3l6.4 -2.0l-4.9 -3.8l-9.4 3.7l-5.2 -1.4ZM701.8 295.8l2.7 -2.9l-2.4 -0.3ZM730.5 285.2l-1.3 -2.2l-1.9 1.8l2.2 1.5ZM718.6 211.3l3.8 -1.8l-0.8 -1.7l2.1 0.2l-0.4 -2.8l-9.1 3.9l1.7 2.2l5.1 -3.3ZM725.1 208.2l3.2 -1.5l-2.6 -1.2ZM730.4 207.6l1.5 0.2l-0.1 -2.3l-3.6 -0.3ZM687.3 213.2l11.6 -4.4l0.8 -6.2l-4.1 -0.2l-0.8 -2.1l1.7 -0.7l-7.0 -3.8l-16.8 2.5l-0.2 4.0l3.8 5.6ZM714.7 194.7l1.0 -2.0l-3.3 2.2ZM776.8 311.0l8.1 -4.9l-5.0 0.1ZM750.4 301.1l3.7 3.6l2.5 -3.2l-4.2 -2.6ZM713.6 205.1l1.4 0.8l2.9 -8.7l2.0 -1.4l-0.0 3.6l1.8 -0.6l4.5 5.6l4.4 -0.6l4.6 -5.0l1.8 0.5l-0.7 2.8l13.2 2.5l-0.3 -3.7l8.8 0.9l2.0 3.2l17.5 8.4l1.3 -5.6l-1.6 -4.5l-3.5 -0.7l-1.0 -5.0l-4.7 -3.5l-7.8 0.3l-10.9 -4.9l-8.7 4.3l-1.6 -3.8l-18.9 1.6l-2.3 2.0l0.7 2.2l-6.0 2.2l2.2 4.1ZM784.3 291.7l0.6 -1.2l-4.2 1.8ZM788.6 302.5l6.5 -7.2l0.0 -8.0l2.5 -0.9l-1.9 -1.9l-2.7 0.4l-2.0 4.4l-4.4 2.8l-1.9 4.4l1.6 1.0l-2.7 -0.3l-0.1 6.3l4.0 -1.6l0.3 2.1ZM802.2 285.3l-5.3 -0.2l5.2 2.1ZM819.3 258.8l1.6 -2.2l-2.3 -5.6l-1.7 1.6ZM821.8 259.7l5.5 -8.6l1.1 -7.1ZM852.3 279.2l6.1 -6.7l-9.0 -9.2l0.1 5.8l2.1 1.4l-2.2 -0.9l-1.4 7.1l3.1 3.5ZM853.2 266.1l0.9 -1.3l-2.3 -2.2l-0.1 -2.4l-1.9 -0.1l-0.6 1.9ZM856.8 265.8l-2.1 1.9l2.6 1.8l1.1 -2.3ZM854.3 260.4l7.6 -4.2l-3.5 -5.9l-1.6 -0.3l-2.4 3.9l-2.9 -0.2l4.0 1.5l-2.2 2.8ZM859.7 270.0l-1.5 -2.1l-0.1 3.6ZM853.1 262.9l7.2 5.0l2.5 -1.5l1.2 -4.5l-5.4 -3.8l-2.1 2.1l-3.5 0.7ZM859.9 250.4l2.2 -1.2l-4.3 -2.0l0.1 2.9ZM862.4 275.7l-0.2 -3.2l-1.8 3.9ZM862.4 269.8l-1.6 0.4l0.9 1.9l1.8 -0.7ZM862.5 256.2l-2.0 1.8l2.3 1.3ZM858.6 251.9l1.6 1.9l1.8 0.1l1.4 -1.3l-4.6 -2.3ZM865.9 266.1l-1.7 2.2l1.1 1.9Z"},{"n":"Bengkulu","d":"M152.8 247.1l3.9 1.5l0.1 -2.2l-5.4 -2.0l-1.1 1.0ZM127.2 183.0l6.5 5.6l6.6 11.1l13.4 9.6l1.5 6.6l22.3 17.9l5.9 2.5l4.2 -3.1l-2.5 -1.3l-1.3 -4.1l-3.0 1.0l-1.7 -1.7l0.8 -3.7l-8.2 -1.6l-3.3 -3.6l1.7 -1.6l-8.0 -4.6l3.1 -2.2l0.9 -3.9l2.1 1.9l1.9 -2.0l-0.1 -3.4l-10.8 -2.2l-0.5 -4.0l-4.4 -1.0l-4.4 -6.0l-4.5 -0.8l-4.0 -4.3l-3.0 0.8l0.3 -2.7l-5.7 -3.5Z"},{"n":"Lampung","d":"M183.4 236.3l6.9 4.4l-0.1 2.3l14.8 15.5l3.2 -0.2l-3.7 -9.1l3.3 0.2l9.6 6.3l1.4 -0.8l-1.0 -3.6l2.7 -3.5l9.3 10.0l4.0 -21.4l0.3 -10.6l-1.9 -1.9l-0.1 -4.2l-3.7 -1.5l-2.9 -5.4l-4.4 -2.3l-6.5 9.5l-13.9 4.0l-2.0 6.8l0.9 4.7l-10.3 1.0l-1.6 -3.0Z"},{"n":"Papua","d":"M866.3 153.8l1.9 -2.7l-1.2 1.3l0.3 -2.4l-2.2 -0.7l-1.0 2.1ZM878.9 145.0l3.7 3.2l2.2 -3.1l-8.3 -2.5l2.7 3.8ZM879.5 165.6l16.4 4.7l14.1 -2.4l-31.5 -4.1ZM885.5 148.0l1.8 6.3l6.0 0.7l5.5 -2.6l-4.9 -1.1l-7.6 -7.6l-2.0 2.4ZM890.7 187.9l4.2 2.1l2.9 5.0l5.1 0.4l-0.1 4.5l2.1 -0.6l0.0 -1.9l1.7 2.8l2.3 -0.3l1.0 3.3l1.3 -0.3l-1.2 -5.1l3.0 1.2l-2.0 1.6l1.1 0.7l2.3 -4.0l5.5 -1.4l11.1 0.3l3.8 -2.1l-0.8 4.4l1.6 1.2l1.2 -5.4l2.4 1.2l2.5 -2.3l3.6 -0.1l1.5 0.5l-0.2 5.7l1.7 1.9l1.8 -2.9l3.6 1.7l-0.8 3.7l4.2 -3.2l1.6 3.3l7.3 0.7l2.7 5.7l3.5 -4.6l5.4 4.2l5.9 -0.7l1.1 1.6l8.0 1.1l0.3 2.0l2.7 -0.4l-1.1 2.0l-5.1 0.1l0.0 -3.0l-2.8 -1.0l0.3 3.3l3.5 4.0l2.4 -1.5l-0.7 -1.3l7.4 0.7l0.0 -30.9l-6.4 0.5l-0.3 -3.3l-6.6 -1.7l-0.9 1.3l-5.2 -3.1l-7.6 0.9l-19.4 -8.6l-4.2 -3.6l-13.4 -4.4l-2.9 -3.1l-17.7 6.9l-0.8 1.6l3.1 4.5l-1.5 0.9l-8.9 3.4l-7.8 -0.7l-3.6 8.5Z"},{"n":"Kepulauan Riau","d":"M180.5 114.8l1.0 -2.5l-2.9 -2.9l-0.4 3.7ZM179.9 107.3l-1.9 -3.2l-0.5 2.5ZM191.4 107.7l-2.9 -1.1l2.3 2.3ZM191.0 106.9l4.1 -0.6l0.1 -2.9l-4.7 0.6ZM197.9 111.4l-1.8 0.5l1.7 1.8ZM197.4 110.1l-3.5 -1.8l2.3 3.5ZM197.8 139.3l2.3 4.5l1.6 -2.1l1.4 1.2l2.1 -3.8l-2.7 -2.9l-3.3 2.2l-0.0 -1.9ZM197.2 105.9l2.3 1.2l2.5 -1.2l-0.2 3.2l2.6 2.1l2.1 -2.0l-1.5 -7.0l-5.3 0.9ZM203.7 134.8l3.8 -1.4l2.9 2.4l3.1 -0.7l-3.3 -3.2l-1.6 1.2l-4.2 -4.5l-2.9 4.4ZM231.2 65.5l0.9 -1.9l-2.9 -1.2l0.6 5.0ZM240.3 60.4l1.8 0.9l-1.2 -2.9ZM281.7 45.5l3.3 1.4l-3.0 0.5l0.8 2.3l3.1 -0.5l2.2 -3.7l0.1 -2.9l-4.0 -5.9l-5.4 4.7Z"},{"n":"Nusa Tenggara Barat","d":"M456.4 322.5l5.9 1.8l0.8 -2.5l1.3 -0.3l-0.8 2.0l2.9 -0.6l-1.6 -1.7l4.9 -10.2l-8.0 -3.0l-5.5 3.3l-1.4 1.8l1.0 6.2l-5.6 0.7l3.9 3.1ZM474.7 326.5l2.4 1.0l23.3 -4.9l5.9 -5.6l0.3 5.4l7.4 -1.6l3.4 1.0l0.1 -1.7l-4.3 -0.5l4.3 -1.3l4.8 1.6l1.2 -3.6l-3.2 1.2l-0.7 -7.2l-4.5 -0.6l-3.0 5.3l-0.3 -5.3l-4.0 -0.9l-4.0 2.5l-2.9 -4.9l-4.9 -1.3l-5.1 3.5l11.7 6.8l1.0 2.2l-10.3 1.6l-5.2 -6.9l-3.8 1.4l-6.3 -2.2l-7.6 6.6l1.2 3.2l-1.6 3.9ZM490.8 307.5l-4.4 -0.0l-0.3 3.7l1.3 0.7ZM521.0 306.3l-1.5 1.0l1.1 1.8l1.6 -1.6Z"},{"n":"Jambi","d":"M144.7 150.2l1.3 3.4l-4.0 3.1l-0.4 4.9l-4.4 3.9l-7.5 0.2l3.5 13.2l5.7 3.5l-0.3 2.7l3.0 -0.8l4.0 4.3l4.5 0.8l4.5 -3.1l6.8 1.2l4.3 -2.7l1.7 -4.8l7.8 -0.3l0.4 -4.0l4.9 4.9l2.4 -6.9l-1.4 -1.8l1.9 -2.1l17.9 -5.1l1.9 0.8l-2.9 -14.2l-12.0 -0.1l-8.0 -6.2l-1.9 1.5l-7.6 -1.0l-8.1 8.1l-7.7 -4.5l-6.4 -0.8Z"},{"n":"Bali","d":"M430.6 313.8l5.2 5.1l-1.7 2.9l1.8 0.3l2.2 -4.3l9.6 -6.0l-11.5 -6.9l-7.0 2.9l-9.2 -2.2l3.2 6.7ZM442.8 320.1l3.1 0.2l-1.4 -2.1Z"},{"n":"Jawa Timur","d":"M342.7 308.1l11.5 1.0l5.6 2.5l2.4 -2.6l18.7 4.2l12.8 -3.5l15.8 7.2l6.3 -0.4l2.7 1.7l-0.6 1.4l5.5 0.2l-5.3 -4.8l2.2 -15.8l-7.7 -2.2l-1.2 -2.0l-6.4 2.8l-13.1 0.1l-5.7 -2.7l-0.9 -7.2l-4.1 -1.7l-2.3 -7.9l-9.4 1.2l-3.5 -3.1l-5.9 -0.1l-2.5 3.6l0.8 4.8l-3.4 2.6l-0.0 2.5l-6.6 -2.4l0.7 9.4l2.5 4.1l-3.1 1.0l-0.9 3.1l-3.5 -0.0ZM379.7 256.6l2.7 -0.2l0.2 -2.3l-2.4 0.3ZM381.8 285.0l17.9 2.2l2.1 -2.8l6.1 0.2l0.1 -1.6l5.1 -1.8l-4.7 -2.5l-22.9 0.7l-3.8 3.0ZM439.9 280.4l4.8 0.0l-7.1 -2.5l-0.9 2.4l4.4 1.1ZM449.5 284.2l-0.8 1.2l3.0 0.4l0.2 -1.4Z"},{"n":"Papua Barat Daya","d":"M755.8 168.8l-2.2 1.6l8.9 3.4l6.6 -1.6l-1.9 -1.4l2.0 -2.0l-2.1 -3.4ZM772.9 139.5l1.8 -0.8l-4.2 -0.2l-0.8 1.8ZM774.6 148.3l4.9 -2.4l-9.4 0.1l-1.0 1.8ZM775.9 155.9l2.3 2.3l2.9 -0.1l2.0 -6.6l-1.1 -2.6l-8.4 0.9ZM764.6 133.3l2.3 1.4l3.9 -0.5l1.1 3.5l0.3 -1.9l2.5 -0.4l1.2 3.1l3.9 -2.5l-4.0 -0.8l-2.4 -4.3l7.6 5.8l2.6 -1.1l3.1 1.6l2.0 -2.0l-4.5 -4.7l-7.4 -1.4l-11.2 2.3l3.6 1.7l-1.3 0.9ZM797.5 160.6l-3.4 0.6l1.6 1.3ZM835.6 145.1l-11.6 -6.3l-11.7 -2.4l-5.7 2.0l-6.9 6.0l-13.3 2.7l0.3 5.5l-6.6 7.8l7.3 1.4l1.6 -4.0l2.0 4.1l5.9 -1.8l-0.1 3.4l3.1 -0.2l1.4 3.3l2.4 -0.1l-2.3 2.2l1.2 3.5l2.5 1.3l-1.0 0.9l6.0 4.6l6.2 -1.9l2.1 -2.8l-1.4 -3.5l2.3 -1.3l3.9 -12.3l2.3 1.4l5.0 -3.7l3.9 -0.1Z"},{"n":"Sumatera Utara","d":"M50.6 109.1l4.3 7.5l3.8 -1.0l0.8 -9.1l-5.0 -3.4l-4.4 -6.4l-3.0 -1.5l-1.5 2.5l-4.9 0.4ZM69.1 140.8l3.2 -0.1l-1.4 -6.5ZM68.8 129.8l4.1 6.8l-1.4 -5.6l-2.0 -2.2ZM74.4 126.9l5.5 -0.5l-7.2 -0.6ZM66.8 35.3l-3.9 0.9l0.2 6.5l-4.0 1.0l-2.2 4.1l5.0 8.5l-2.6 1.7l1.5 3.0l-0.7 4.8l3.5 2.6l-0.6 5.6l2.5 4.5l-1.5 3.1l15.3 10.8l-2.1 3.1l7.2 17.2l2.4 11.2l7.5 -6.8l8.6 1.5l1.2 -1.6l-2.9 -3.3l0.1 -4.2l7.5 2.8l-1.3 -1.3l1.0 -7.6l-2.5 -4.6l8.3 -3.1l-1.0 -5.2l-2.4 -1.2l2.0 -9.0l-1.1 -7.1l-2.2 -3.4l-5.1 -1.2l0.2 -4.0l-5.1 -5.0l-22.9 -13.2l-3.6 -5.2l-8.0 -2.2Z"},{"n":"Sulawesi Tenggara","d":"M581.5 245.3l2.3 3.2l2.2 -0.6l0.3 -5.4l-2.3 -3.1l-2.5 1.0ZM563.4 191.5l1.7 1.2l-0.7 5.7l-4.2 5.5l0.3 2.0l10.1 10.0l5.8 1.7l-3.0 13.2l4.7 3.9l7.4 0.9l1.5 -1.5l-0.6 -5.2l3.3 -2.3l8.1 -1.8l3.3 2.5l-1.5 -4.0l3.2 2.6l1.5 -1.0l-0.8 -7.2l-3.8 1.9l-0.4 -3.3l-2.6 -0.9l2.8 -1.5l-3.0 -0.0l-1.8 -3.2l-5.4 -3.1l1.8 -1.2l0.0 -4.1l2.2 1.8l-2.6 -7.6l-12.9 -4.4l-6.1 2.5l-6.7 -5.3ZM592.2 246.6l1.2 -1.6l1.7 1.8l1.3 -2.8l-0.1 3.5l2.6 -1.8l-1.1 -4.3l3.9 -5.7l-1.5 -6.2l-8.3 4.7l1.4 5.6l-2.5 5.2ZM597.5 249.7l1.4 3.5l1.4 -1.4l1.8 1.6l2.4 -3.0l-0.5 -2.4l7.6 -3.4l-3.8 -3.5l-2.7 0.7l2.3 -9.0l2.4 -0.9l1.6 3.0l-2.9 -10.7l-4.6 3.5l-2.5 11.0l-0.1 4.0l1.4 0.1l-3.4 2.2ZM619.7 246.4l1.1 -2.0l-2.4 -1.1ZM605.5 218.4l3.9 3.4l3.0 -3.7l-5.4 -2.5Z"},{"n":"Nusa Tenggara Timur","d":"M529.6 313.0l-1.7 4.1l1.2 2.7l2.9 -5.3ZM533.5 316.8l-0.8 3.1l2.0 1.2l2.1 -4.2l-2.6 1.6ZM526.7 341.9l7.4 0.4l10.8 10.0l6.3 1.7l8.4 -4.7l-5.3 -8.0l-3.0 -2.5l-4.7 0.4l-0.8 -3.1l-2.9 -0.6l-3.1 -4.1l-2.8 2.6l-11.0 -0.8l-7.3 2.7l-0.8 1.5l2.2 2.7ZM541.5 321.3l12.9 -0.0l3.4 1.7l1.8 -1.4l4.2 2.8l6.8 -1.1l1.0 -2.5l8.4 2.1l7.5 -3.3l5.7 0.5l9.7 -3.4l-0.8 -3.6l2.3 0.3l2.8 -3.6l-3.3 -4.7l-2.9 3.3l3.7 -0.8l-0.2 2.1l-8.8 4.3l-0.3 2.9l-4.0 0.8l-6.4 -4.2l-8.4 0.5l-2.2 3.1l-11.8 -5.9l-12.0 -2.3l-5.0 1.4l-1.9 2.9l-2.0 -1.2l-3.2 1.7l-1.6 6.7l1.9 2.1ZM579.6 360.5l5.0 -1.4l0.3 -2.3l-3.2 -0.0l-3.6 2.9ZM603.1 367.4l8.5 -2.3l3.9 -3.1l0.1 -5.1l-4.2 2.7l2.1 0.3l-10.9 4.1ZM605.6 316.2l4.8 -3.3l-4.1 0.1l-2.3 3.2ZM606.8 312.3l6.5 -0.4l0.9 -2.7l-4.2 -0.6ZM614.5 353.8l1.1 0.7l-0.1 -3.0l2.3 -0.5l-1.1 -1.5l-3.3 3.4ZM618.0 354.5l6.0 0.3l7.6 -4.2l7.4 -0.9l11.0 -10.6l2.2 -3.8l-2.3 -5.9l4.2 -0.4l0.1 -3.3l-1.4 -1.1l-2.9 2.1l-1.2 -2.2l-9.8 4.6l-2.7 6.8l-3.0 -2.6l-2.6 0.9l-0.4 -1.8l-6.2 3.6l-4.7 9.9l0.2 2.0l4.0 0.2l-6.2 3.9l-0.7 2.7ZM613.1 315.4l5.9 0.3l1.3 -3.4l6.7 -3.6l-2.9 -1.6l-2.3 1.9l-1.7 -0.8l-0.9 3.1l-1.5 -0.3l1.3 -2.4l-3.7 0.4l1.6 1.9l-5.5 3.6ZM630.8 315.4l4.4 -4.7l0.5 -3.2l-5.0 4.1l-0.7 -1.8l-2.1 1.2l-1.1 1.9l2.6 -0.4ZM638.9 313.0l14.2 -2.1l0.2 -2.6l-1.1 -1.6l-10.4 1.1l-0.2 -1.6l-2.7 0.2l-1.4 3.0l2.9 -0.7l-4.5 4.0Z"},{"n":"Kalimantan Selatan","d":"M418.1 204.5l5.7 4.0l0.6 11.5l28.9 -12.3l1.4 -5.4l5.1 -5.5l-3.9 -2.7l1.1 -3.4l0.2 2.3l2.6 1.5l3.0 -9.0l-2.0 -1.3l4.2 0.7l1.0 -3.3l-8.6 -2.2l-7.1 1.8l-0.6 -7.2l-2.5 -0.5l0.7 -5.3l-2.4 -6.7l3.1 -3.8l-8.0 4.5l-1.8 7.2l2.9 2.0l-0.5 1.5l-2.6 4.4l-7.9 4.9l-3.8 6.1l-3.6 2.1ZM456.2 217.5l4.6 -3.2l-1.1 -15.4l-3.1 2.1l-2.4 7.2ZM462.8 207.4l0.1 -5.1l-2.1 4.2l1.1 2.2Z"},{"n":"Aceh","d":"M2.9 2.9l0.5 -2.5l-2.9 -0.4ZM13.3 71.4l6.0 1.5l5.8 4.9l3.3 -0.5l-1.0 -2.5l-7.5 -3.5l-0.3 -2.5l-6.7 -3.9l-2.1 3.3ZM43.3 80.2l-1.4 0.4l5.0 3.5l-0.9 -3.5ZM66.8 35.3l0.7 -2.8l-6.6 -2.5l-1.8 -7.8l-8.9 -7.8l-6.4 2.3l-7.5 -2.9l-10.2 1.4l-6.8 -1.8l-4.2 -4.6l-6.1 -2.7l-3.9 -0.6l-5.2 2.8l0.5 5.3l7.0 13.7l21.0 19.9l8.2 1.5l10.6 14.9l5.0 2.5l1.7 10.7l2.6 3.5l3.6 -0.8l3.8 2.2l1.5 -3.1l-2.5 -4.5l0.6 -5.6l-3.5 -2.6l0.7 -4.8l-1.5 -3.0l2.6 -1.7l-5.0 -8.5l2.2 -4.1l4.0 -1.0l-0.2 -6.5Z"},{"n":"Kalimantan Tengah","d":"M339.1 194.3l5.3 1.5l9.5 -3.6l3.1 2.3l3.6 -3.6l2.3 4.4l-1.2 10.0l1.5 0.6l9.1 -4.9l6.7 2.9l9.7 -6.3l-1.4 -1.3l2.2 -2.8l6.3 6.6l5.7 -2.4l0.6 6.5l9.2 -3.2l6.6 3.1l5.4 -14.1l3.6 -2.1l3.8 -6.1l7.9 -4.9l2.6 -4.4l0.5 -1.5l-2.9 -2.0l1.8 -7.2l8.0 -4.5l1.8 -4.7l-1.6 0.9l-4.6 -6.1l-3.9 0.3l-1.9 -1.8l2.0 -4.9l-2.0 -0.4l-1.2 -4.2l1.6 -6.2l-3.1 0.1l-4.0 4.1l-1.9 -5.4l-4.0 -2.2l4.2 -5.3l4.8 -1.1l-3.0 -7.9l-7.1 0.7l-6.4 3.7l-3.5 -0.2l-1.7 -3.4l-6.1 0.8l-6.3 7.1l-5.8 1.8l3.4 6.8l-4.9 5.9l-0.1 3.8l-1.9 -1.2l-12.4 5.3l-5.5 0.6l-2.1 -2.4l-0.9 2.5l-2.0 -0.5l-9.6 5.8l-2.0 5.2l-7.6 5.8l-6.8 2.7l3.0 2.5l-1.3 4.3l3.0 1.7l-1.7 5.2l2.0 2.2l1.3 7.9Z"},{"n":"Papua Pegunungan","d":"M932.4 229.1l3.6 -0.6l2.3 3.2l2.9 -1.0l1.6 3.1l3.7 -0.4l0.4 -2.1l5.8 0.1l4.3 3.2l2.5 -2.3l-1.9 5.3l19.9 1.6l-1.5 3.2l-2.1 -0.9l2.7 1.2l0.9 -2.8l1.4 1.9l1.6 -0.6l-1.3 -2.2l3.8 -0.0l3.3 3.6l13.4 2.9l0.0 -28.9l-7.4 -0.7l0.7 1.3l-2.4 1.5l-3.5 -4.0l-0.3 -3.3l2.8 1.0l-0.0 3.0l5.1 -0.1l1.1 -2.0l-2.7 0.4l-0.3 -2.0l-8.0 -1.1l-1.1 -1.6l-5.9 0.7l-5.4 -4.2l-3.5 4.6l-2.7 -5.7l-7.3 -0.7l-1.6 -3.3l-4.2 3.2l0.8 -3.7l-3.6 -1.7l-1.8 2.9l-1.7 -1.9l0.2 -5.7l-1.5 -0.5l-3.6 0.1l-2.5 2.3l-2.4 -1.2l-1.3 13.0l4.2 0.9l-0.2 3.2l2.1 1.1l-7.7 1.6l-1.7 6.4l-4.1 -1.5l-0.0 2.1l2.6 -0.3l0.6 1.6l2.0 -1.2l-3.0 6.2Z"},{"n":"Kepulauan Bangka Belitung","d":"M222.7 175.3l3.1 -1.0l5.4 1.9l0.4 4.4l2.9 2.5l0.3 7.4l10.5 3.4l1.8 3.0l4.9 -0.6l0.0 -1.8l-3.2 -1.9l2.6 -6.0l2.9 -1.5l-11.8 -3.3l-5.5 -17.9l-3.5 -2.2l-3.7 0.9l1.9 5.9l-3.4 -1.5l1.4 -2.0l-2.4 -2.7l-4.6 1.7l-0.1 4.2l-6.1 4.8l4.2 2.9ZM254.3 192.6l-2.8 1.1l3.6 1.3ZM272.2 199.0l3.7 -1.2l0.1 -2.0l3.1 4.5l2.0 -0.6l4.7 -8.0l-0.5 -2.8l-6.1 -3.9l-7.2 -0.3l-2.8 7.9l1.6 0.3l-0.1 6.4Z"},{"n":"Sumatera Selatan","d":"M149.9 189.3l4.4 6.0l4.4 1.0l0.5 4.0l10.8 2.2l0.1 3.4l-1.9 2.0l-2.1 -1.9l-0.9 3.9l-3.1 2.2l8.0 4.6l-1.7 1.6l3.3 3.6l8.2 1.6l-0.8 3.7l1.7 1.7l3.0 -1.0l1.3 4.1l2.5 1.3l1.6 3.0l10.3 -1.0l-0.9 -4.7l2.0 -6.8l13.9 -4.0l6.5 -9.5l4.4 2.3l2.9 5.4l3.7 1.5l3.0 -7.3l-3.0 -4.1l2.1 -5.5l3.9 -3.2l-1.1 -5.3l-5.1 -1.6l-0.7 -5.0l-3.7 -2.0l0.2 -4.5l-12.6 -0.3l-3.1 -2.1l-4.4 1.8l4.3 -5.6l-1.6 -2.2l-7.1 -0.8l-0.7 -2.3l1.2 -3.3l-2.6 -1.8l-17.9 5.1l-1.9 2.1l1.4 1.8l-2.4 6.9l-4.9 -4.9l-0.4 4.0l-7.8 0.3l-1.7 4.8l-4.3 2.7l-6.8 -1.2ZM204.3 169.4l-1.2 2.0l2.3 1.2l0.8 -1.8Z"},{"n":"Banten","d":"M219.7 271.2l-3.1 1.5l1.1 1.6ZM251.6 261.8l-1.0 -1.7l-4.2 0.8l-3.0 -1.8l-4.0 1.4l-3.3 -3.0l-3.0 4.1l-2.4 9.6l-2.7 -0.8l-4.0 7.6l-2.0 -3.8l-3.2 2.2l0.8 1.9l5.9 0.7l9.9 -1.3l8.8 3.6l2.8 -4.6l-2.1 -1.9l-0.1 -7.3l7.7 -0.7l-2.0 -3.1Z"},{"n":"Sulawesi Utara","d":"M617.1 121.9l22.7 -3.4l2.8 -6.9l5.3 -3.9l4.2 -8.6l3.3 -2.1l-1.4 -4.9l-4.0 -1.3l-3.8 3.8l0.2 2.6l-6.2 2.3l1.0 3.6l-4.2 0.2l-1.9 3.7l-7.9 3.8l-17.8 -1.9l3.3 2.7l0.1 2.3l5.7 2.7ZM658.6 70.5l1.3 0.5l0.0 -3.4ZM661.3 53.2l2.4 2.1l1.5 -1.2l-2.6 -5.2l-2.8 -1.5ZM687.3 41.7l2.2 -0.4l2.6 -5.5l-1.2 -4.6l-2.6 -1.3l-1.2 4.6l2.4 2.6Z"},{"n":"Kalimantan Utara","d":"M422.7 97.8l3.4 2.5l3.9 -2.3l4.3 4.8l6.1 1.8l2.3 -2.9l6.0 -0.1l6.0 -6.5l2.6 -4.1l1.3 -7.6l2.8 -1.5l-1.3 -1.6l4.1 -1.2l0.6 -3.6l4.6 1.4l1.8 -2.6l4.1 1.7l1.4 -2.5l3.6 -0.4l0.3 1.9l3.5 -1.7l4.9 0.9l2.9 4.2l5.3 -2.4l-6.5 -7.6l-0.0 -3.8l-2.5 -0.5l1.1 -1.5l-4.2 -0.0l0.2 -2.4l-2.7 -0.0l4.4 -3.0l-6.7 -4.2l0.2 -2.4l-4.6 0.2l9.0 -0.6l1.3 -2.0l4.0 2.2l3.1 -1.9l-2.7 -1.4l2.1 0.3l-1.7 -2.3l-5.4 -1.5l-0.9 -4.6l2.2 0.9l1.7 -1.6l-2.7 -0.0l-4.8 -4.4l-4.9 1.2l-10.0 -1.6l-2.7 2.2l-2.0 -2.2l-3.7 0.2l-2.3 2.3l-4.3 -2.5l-6.8 10.3l2.0 10.5l-2.5 1.8l0.4 4.5l-3.7 3.8l-2.4 -1.5l-4.1 4.8l1.2 0.8l-1.4 3.9l3.5 2.3l-11.1 6.9l3.1 5.9l-3.8 2.2l-0.0 4.0ZM481.4 50.6l-0.5 2.0l6.3 0.3ZM488.6 57.0l1.4 1.1l0.4 -3.8l-2.6 -0.6ZM487.6 41.0l-2.1 0.4l0.4 1.7l4.8 0.9ZM492.2 40.6l-1.7 -2.1l-1.7 1.4l1.7 2.5ZM496.0 40.3l-0.5 -2.3l-4.7 0.0Z"},{"n":"Kalimantan Timur","d":"M406.9 114.5l6.1 -0.8l1.7 3.4l3.5 0.2l6.4 -3.7l7.1 -0.7l3.0 7.9l-4.8 1.1l-4.2 5.3l4.0 2.2l1.9 5.4l4.0 -4.1l3.1 -0.1l-1.6 6.2l1.2 4.2l2.0 0.4l-2.0 4.9l1.9 1.8l3.9 -0.3l4.6 6.1l1.6 -0.9l-1.8 4.7l-3.1 3.8l2.4 6.7l-0.7 5.3l2.5 0.5l0.6 7.2l7.1 -1.8l8.6 2.2l0.7 -5.2l-4.1 0.9l-0.9 -2.3l2.1 -1.1l-0.2 -6.3l-4.5 0.1l6.8 -3.9l-0.0 -3.4l4.5 -1.9l-0.9 -7.1l1.9 5.3l1.6 -0.1l8.0 -8.1l0.6 -7.2l3.9 -2.5l-0.7 -5.4l2.1 -4.0l0.9 -9.8l4.2 -7.4l3.6 -1.7l2.4 1.3l-2.8 -7.5l3.7 4.8l6.6 2.1l9.3 0.1l4.2 -4.0l-23.5 -18.2l-1.9 -4.1l-2.6 -0.5l-0.3 -3.2l7.2 -0.4l1.7 -1.9l-2.4 -3.3l-5.3 2.4l-2.9 -4.2l-4.9 -0.9l-3.5 1.7l-0.3 -1.9l-3.6 0.4l-1.4 2.5l-4.1 -1.7l-1.8 2.6l-4.6 -1.4l-0.6 3.6l-4.1 1.2l1.3 1.6l-2.8 1.5l-1.3 7.6l-8.7 10.6l-6.0 0.1l-2.3 2.9l-6.1 -1.8l-4.3 -4.8l-3.9 2.3l-7.3 -4.5l-4.0 2.4l-1.7 5.5l-5.2 2.4l0.8 4.5Z"},{"n":"Jawa Tengah","d":"M296.9 296.3l4.3 1.5l6.4 -0.9l15.5 4.1l2.4 -4.7l3.5 0.6l3.7 -3.5l1.0 4.9l6.4 1.1l-0.7 4.5l1.7 3.9l1.4 0.2l1.2 -3.3l3.5 0.0l0.9 -3.1l3.1 -1.0l-2.5 -4.1l-0.7 -9.4l6.6 2.4l0.0 -2.5l3.4 -2.6l-0.8 -4.8l2.5 -3.6l-4.3 -2.9l-2.4 1.8l-5.0 -1.0l-2.4 -5.0l-3.2 -0.5l-4.1 1.2l-5.6 10.8l-2.9 0.3l-3.1 -2.6l-4.5 1.7l-10.2 -2.9l-4.4 1.8l-4.5 -0.8l-0.7 -1.7l-5.1 0.6l-1.4 7.2l-4.5 1.3l-0.1 2.5l2.6 1.5Z"},{"n":"Maluku Utara","d":"M673.8 182.0l-2.4 -5.5l0.6 -3.4l-1.9 -1.1l-0.6 5.1l2.4 5.0ZM665.7 171.0l13.6 -1.9l-21.6 -0.3l2.0 2.7ZM638.1 173.1l9.3 -2.9l9.7 0.0l0.3 -2.4l-1.7 -1.3l-1.3 1.3l-1.0 -2.1l-1.5 1.9l-8.6 -2.8l-5.9 0.4l-1.4 5.0ZM699.4 145.6l2.0 0.5l-2.5 -4.0l-1.3 3.2ZM699.0 140.1l1.3 -4.8l-3.1 -0.7l-0.6 5.0ZM705.0 156.6l3.7 0.5l0.6 -1.4l-4.1 -1.1ZM701.7 141.0l2.9 1.6l-0.1 4.2l3.4 -1.8l2.9 2.7l3.0 -2.1l-6.6 -3.3l2.0 -3.3l-2.7 -3.3l-2.4 2.2l-2.8 -1.5ZM704.2 165.9l12.1 0.7l3.2 -1.9l-11.5 -6.7l-4.5 2.3l-0.8 4.1ZM703.4 106.1l4.6 5.0l-2.4 5.7l4.5 5.3l-1.0 12.7l3.9 2.1l3.2 6.8l8.9 4.8l-8.1 -10.5l-3.5 -9.0l-0.4 -6.8l1.0 -3.2l3.6 -0.5l17.2 5.2l-4.2 -2.1l0.0 -4.7l-7.8 -2.3l-2.6 -2.9l10.6 -6.1l0.8 -11.0l-5.5 0.5l-6.7 4.0l-1.7 2.3l2.4 2.1l-4.5 1.6l-2.3 5.7l-4.7 -1.0l-0.3 -3.2l5.5 -2.8l2.3 -3.5l0.0 -9.3l-3.7 -2.4l4.9 -7.0l-1.9 -0.8l-8.8 9.8l-3.6 11.4ZM720.2 79.2l2.3 5.3l4.8 -0.7l3.6 -9.5l-2.6 -3.1Z"},{"n":"Kalimantan Barat","d":"M300.2 163.1l-3.3 0.1l0.7 2.0l2.8 -0.6ZM304.1 133.3l-1.6 0.5l0.8 2.3l-0.2 -1.3l2.4 -1.1ZM306.5 146.8l1.3 1.8l2.8 -1.0l2.8 0.7l2.8 2.7l1.3 -2.5l-4.1 -3.3l-6.8 -1.9ZM316.2 155.2l2.1 -1.4l-0.5 -2.8l-5.9 -0.9l-2.4 6.1l2.7 1.1ZM414.9 98.1l-5.0 -0.9l-7.5 5.0l-2.1 -2.3l-12.1 -1.9l1.2 -3.5l-12.0 -0.3l-6.0 2.8l-1.5 6.9l-4.5 0.3l-2.6 3.0l-3.3 -1.2l-3.2 1.9l-0.7 -1.7l-5.6 -1.1l-14.8 4.9l-6.0 -3.0l-1.8 -4.1l-2.8 -0.6l-2.2 -4.2l-2.7 -0.4l-3.8 -4.3l0.5 -3.6l-2.2 -0.2l-1.0 -2.9l1.9 -3.0l-6.3 2.7l-1.9 6.2l-4.6 3.8l-1.4 6.6l-1.7 0.5l1.5 4.8l-2.8 2.8l1.9 4.2l-0.3 6.2l3.8 1.9l2.4 4.1l-0.0 6.2l-2.3 1.1l0.5 5.0l12.1 3.9l-0.7 2.4l2.7 2.4l-0.6 1.8l4.5 3.0l-0.7 1.8l3.1 2.6l-0.3 7.4l-2.9 3.6l4.4 3.5l-0.4 5.5l3.7 15.6l6.7 -2.6l1.4 4.2l11.9 -7.5l-1.3 -7.9l-2.0 -2.2l1.7 -5.2l-3.0 -1.7l1.3 -4.3l-3.0 -2.5l6.8 -2.7l7.6 -5.8l2.0 -5.2l9.6 -5.8l2.0 0.5l0.9 -2.5l2.1 2.4l5.5 -0.6l12.4 -5.3l1.9 1.2l0.1 -3.8l4.9 -5.9l-3.4 -6.8l5.8 -1.8l6.3 -7.1l1.8 -4.0l-0.8 -4.5l5.2 -2.4Z"},{"n":"Jawa Barat","d":"M244.5 281.2l3.2 0.1l-3.7 6.5l3.3 2.8l20.0 2.2l8.8 5.0l10.9 1.8l3.3 -0.5l0.5 -2.1l6.2 -0.6l-2.7 -6.9l-2.6 -1.5l0.1 -2.5l4.5 -1.3l1.4 -7.2l-5.1 -0.6l-1.4 -6.1l-3.8 -4.8l-3.3 -0.6l-2.5 2.0l-4.3 -3.1l-4.8 1.1l-4.5 -1.9l-2.8 -3.9l-7.4 -1.1l-2.0 9.4l-3.0 -0.7l-7.7 0.7l0.1 7.3l2.1 1.9Z"}];
+const YEARS = ['2021','2022','2023','2024','2025'];
+const fmt = n => n==null ? '–' : n.toLocaleString('id-ID');
+const fmt1 = n => n.toLocaleString('id-ID',{maximumFractionDigits:1,minimumFractionDigits:1});
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+/* ---------- tooltip ---------- */
+const tt = document.getElementById('tt');
+function showTT(html, x, y){
+  tt.innerHTML = html; tt.style.display = 'block';
+  const r = tt.getBoundingClientRect();
+  let left = x + 14, top = y + 14;
+  if (left + r.width > innerWidth - 8) left = x - r.width - 14;
+  if (top + r.height > innerHeight - 8) top = y - r.height - 14;
+  tt.style.left = left + 'px'; tt.style.top = top + 'px';
+}
+function hideTT(){ tt.style.display = 'none'; }
+function ttTable(title, vals, unit){
+  let rows = YEARS.map((y,i)=>`<tr><td>${y}${i==3?'*':i==4?'**':''}</td><td>${fmt(vals[i])}</td></tr>`).join('');
+  return `<div class="tt-t">${title}</div><table>${rows}</table><div style="color:var(--muted);margin-top:3px">${unit}</div>`;
+}
+
+/* ---------- KPI ---------- */
+const kk25 = DATA.kk.filter(d=>d.v[4]!=null).map(d=>({...d, x:d.v[4]})).sort((a,b)=>b.x-a.x);
+const median = arr => { const s=[...arr].sort((a,b)=>a-b), m=s.length>>1; return s.length%2? s[m] : (s[m-1]+s[m])/2; };
+const med25 = median(kk25.map(d=>d.x));
+const hi = kk25[0], lo = kk25[kk25.length-1];
+const provHi = [...DATA.provs].sort((a,b)=>b.v[4]-a.v[4])[0];
+document.getElementById('kpis').innerHTML = [
+  {l:'Tertinggi · kab/kota', v:fmt(hi.x), s:'ribu Rp', w:`${hi.n}, ${hi.p}`},
+  {l:'Terendah · kab/kota', v:fmt(lo.x), s:'ribu Rp', w:`${lo.n}, ${lo.p}`},
+  {l:'Median nasional', v:fmt(Math.round(med25)), s:'ribu Rp', w:'514 kabupaten/kota'},
+  {l:'Rasio tertinggi : terendah', v:fmt1(hi.x/lo.x)+'×', s:'', w:`${hi.n.replace('Kab. ','')} vs ${lo.n.replace('Kab. ','')}`},
+].map(k=>`<div class="kpi"><div class="lab">${k.l}</div><div class="val">${k.v} <small>${k.s}</small></div><div class="who">${k.w}</div></div>`).join('');
+
+/* ---------- income category ---------- */
+const TH = { lm:1136, um:4496, hi:13935 };            // World Bank FY2026, US$
+function incCat(vRibu, kurs){
+  const usd = vRibu*1000/kurs;
+  if (usd > TH.hi) return 'hi';
+  if (usd >= TH.um) return 'um';
+  if (usd >= TH.lm) return 'lm';
+  return 'low';
+}
+const INC = {
+  hi:  {label:'High income',        cv:'--inc-hi'},
+  um:  {label:'Upper-middle income',cv:'--inc-um'},
+  lm:  {label:'Lower-middle income',cv:'--inc-lm'},
+  low: {label:'Low income',         cv:'--inc-low'},
+};
+
+/* ---------- province bars ---------- */
+let provYear = 4, kurs = 16300;
+const yearSegs = [document.getElementById('provYear'), document.getElementById('mapYear')];
+yearSegs.forEach(seg=>{
+  YEARS.forEach((y,i)=>{
+    const b = document.createElement('button');
+    b.textContent = y + (i==3?'*':i==4?'**':'');
+    b.setAttribute('aria-pressed', i===provYear);
+    b.onclick = ()=>{ provYear=i; renderProv(); };
+    seg.appendChild(b);
+  });
+});
+
+/* map: build paths once */
+const mapSvg = document.getElementById('map');
+mapSvg.innerHTML = MAP.map((m,i)=>`<path id="mp${i}" d="${m.d}" fill="var(--chip-bg)"></path>`).join('');
+MAP.forEach((m,i)=>{
+  const d = DATA.provs.find(p=>p.p===m.n);
+  const el = document.getElementById('mp'+i);
+  el.addEventListener('pointermove', e=>{
+    const v = d.v[provYear];
+    const cat = v==null ? null : incCat(v, kurs);
+    showTT(ttTable(m.n + (cat ? ` · ${INC[cat].label}` : ''), d.v, 'ribu Rp per kapita'), e.clientX, e.clientY);
+  });
+  el.addEventListener('pointerleave', hideTT);
+});
+function renderMap(counts){
+  MAP.forEach((m,i)=>{
+    const d = DATA.provs.find(p=>p.p===m.n);
+    const v = d.v[provYear];
+    document.getElementById('mp'+i).setAttribute('fill',
+      v==null ? 'var(--chip-bg)' : `var(${INC[incCat(v,kurs)].cv})`);
+  });
+  const lm = counts.lm, note = document.getElementById('mapNote');
+  note.textContent = `Tahun ${YEARS[provYear]}${provYear==3?' (sementara)':provYear==4?' (sangat sementara)':''} · kurs Rp${kurs.toLocaleString('id-ID')}/US$ · ${lm} provinsi masih Lower-middle income`;
+  const anyNull = DATA.provs.some(p=>p.v[provYear]==null);
+  document.getElementById('mapLegend').innerHTML = ['hi','um','lm']
+    .map(c=>`<span><span class="sw" style="background:var(${INC[c].cv})"></span>${INC[c].label}</span>`).join('')
+    + (anyNull ? `<span><span class="sw" style="background:var(--chip-bg)"></span>Data belum tersedia</span>` : '');
+}
+
+function renderProv(){
+  yearSegs.forEach(seg=>seg.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed', i===provYear)));
+  document.getElementById('incNoteYear').textContent =
+    `Tahun ${YEARS[provYear]}${provYear==3?' (sementara)':provYear==4?' (sangat sementara)':''} · 38 provinsi`;
+
+  const rows = DATA.provs.map(p=>({...p, x:p.v[provYear]})).sort((a,b)=>(b.x??-1)-(a.x??-1));
+  const max = Math.max(...rows.map(r=>r.x??0));
+  const host = document.getElementById('provBars');
+  host.innerHTML = '';
+  const counts = {hi:0,um:0,lm:0,low:0};
+  rows.forEach(r=>{
+    const row = document.createElement('div'); row.className='brow';
+    const cat = r.x==null ? null : incCat(r.x, kurs);
+    if (cat) counts[cat]++;
+    const w = r.x==null ? 0 : Math.max(0.5, r.x/max*100);
+    row.innerHTML = `<div class="bl">${r.p}</div>
+      <div class="track">${r.x==null
+        ? `<span class="bv" style="margin-left:0">–</span>`
+        : `<div class="bar" style="width:${w}%; background:var(${INC[cat].cv})"></div><span class="bv">${fmt(r.x)}</span>`}</div>`;
+    row.addEventListener('pointermove', e=>showTT(ttTable(r.p, r.v, 'ribu Rp per kapita'), e.clientX, e.clientY));
+    row.addEventListener('pointerleave', hideTT);
+    host.appendChild(row);
+  });
+
+  document.getElementById('provLegend').innerHTML = ['hi','um','lm']
+    .map(c=>`<span><span class="sw" style="background:var(${INC[c].cv})"></span>${INC[c].label}</span>`).join('');
+
+  const order = ['hi','um','lm','low'];
+  document.getElementById('incSummary').innerHTML = order.filter(c=>counts[c]>0 || c!=='low').map(c=>`
+    <div class="incrow"><div class="n">${counts[c]}</div>
+      <div class="t"><span class="sw legend" style="display:inline-block;width:11px;height:11px;border-radius:3px;background:var(${INC[c].cv});margin-right:7px;vertical-align:-1px"></span>provinsi ${INC[c].label}</div></div>`).join('');
+
+  renderMap(counts);
+}
+document.getElementById('kurs').addEventListener('input', e=>{
+  const v = +e.target.value;
+  if (v>=8000 && v<=25000){ kurs=v; renderProv(); }
+});
+
+/* ---------- top/bottom kab-kota ---------- */
+let kkView='top';
+document.getElementById('kkToggle').querySelectorAll('button').forEach(b=>{
+  b.onclick=()=>{ kkView=b.dataset.v;
+    document.getElementById('kkToggle').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', x===b));
+    renderKK(); };
+});
+function renderKK(){
+  const list = kkView==='top' ? kk25.slice(0,15) : kk25.slice(-15).reverse();
+  document.getElementById('kkTitle').textContent =
+    kkView==='top' ? 'Kabupaten/kota — 15 tertinggi (2025)' : 'Kabupaten/kota — 15 terendah (2025)';
+  const max = Math.max(...list.map(d=>d.x));
+  const host = document.getElementById('kkBars'); host.innerHTML='';
+  list.forEach(d=>{
+    const row = document.createElement('div'); row.className='brow';
+    row.innerHTML = `<div class="bl" title="${d.n} — ${d.p}">${d.n}</div>
+      <div class="track"><div class="bar" style="width:${Math.max(1,d.x/max*100)}%"></div><span class="bv">${fmt(d.x)}</span></div>`;
+    row.addEventListener('pointermove', e=>showTT(ttTable(`${d.n} · ${d.p}`, d.v, 'ribu Rp per kapita'), e.clientX, e.clientY));
+    row.addEventListener('pointerleave', hideTT);
+    host.appendChild(row);
+  });
+}
+
+/* ---------- trend line chart ---------- */
+const SLOTS = ['--s1','--s2','--s3','--s4','--s5','--s6'];
+let trend = ['DKI Jakarta','Kalimantan Timur','Sulawesi Tengah','Nusa Tenggara Timur'];
+const slotOf = {};                       // color follows the entity while selected
+function assignSlots(){
+  const used = new Set(Object.values(slotOf));
+  trend.forEach(p=>{ if(!(p in slotOf)){
+    const free = SLOTS.findIndex((s,i)=>![...Object.values(slotOf)].includes(i));
+    slotOf[p] = free; } });
+  Object.keys(slotOf).forEach(p=>{ if(!trend.includes(p)) delete slotOf[p]; });
+}
+const trendAdd = document.getElementById('trendAdd');
+function renderTrendControls(){
+  assignSlots();
+  const chips = document.getElementById('trendChips'); chips.innerHTML='';
+  trend.forEach(p=>{
+    const c = document.createElement('span'); c.className='chip';
+    c.innerHTML = `<span class="dot" style="background:var(${SLOTS[slotOf[p]]})"></span>${p}
+      <button aria-label="Hapus ${p}">×</button>`;
+    c.querySelector('button').onclick = ()=>{ trend = trend.filter(x=>x!==p); renderTrendControls(); renderLine(); };
+    chips.appendChild(c);
+  });
+  trendAdd.innerHTML = '<option value="">+ Tambah provinsi…</option>' +
+    DATA.provs.filter(p=>!trend.includes(p.p)).map(p=>`<option>${p.p}</option>`).join('');
+  trendAdd.disabled = trend.length>=6;
+}
+trendAdd.addEventListener('change', ()=>{
+  if (trendAdd.value && trend.length<6){ trend.push(trendAdd.value); renderTrendControls(); renderLine(); }
+});
+
+function renderLine(){
+  const svg = document.getElementById('lineChart');
+  const W=560, H=330, L=46, R=118, T=14, B=30;
+  const pw = W-L-R, ph = H-T-B;
+  const series = trend.map(p=>{
+    const d = DATA.provs.find(x=>x.p===p);
+    return { p, slot:slotOf[p], v:d.v.map(x=>x==null?null:x/1000) };   // juta Rp
+  });
+  const all = series.flatMap(s=>s.v).filter(x=>x!=null);
+  const maxV = all.length ? Math.max(...all)*1.06 : 1;
+  const x = i => L + pw*i/(YEARS.length-1);
+  const y = v => T + ph*(1 - v/maxV);
+  const ticks = niceTicks(0, maxV, 5);
+  let g = '';
+  ticks.forEach(tv=>{
+    g += `<line x1="${L}" y1="${y(tv)}" x2="${L+pw}" y2="${y(tv)}" stroke="var(--grid)" stroke-width="1"/>`;
+    g += `<text x="${L-8}" y="${y(tv)+4}" text-anchor="end" font-size="11" fill="var(--muted)" style="font-variant-numeric:tabular-nums">${tv.toLocaleString('id-ID')}</text>`;
+  });
+  g += `<line x1="${L}" y1="${T+ph}" x2="${L+pw}" y2="${T+ph}" stroke="var(--baseline)" stroke-width="1"/>`;
+  YEARS.forEach((yr,i)=>{
+    g += `<text x="${x(i)}" y="${H-10}" text-anchor="middle" font-size="11" fill="var(--muted)">${yr}${i==3?'*':i==4?'**':''}</text>`;
+  });
+  // series lines + endpoint labels (direct labels = relief for contrast warns)
+  const labelYs = [];
+  series.forEach(s=>{
+    const pts = s.v.map((v,i)=>v==null?null:[x(i),y(v)]).filter(Boolean);
+    if (!pts.length) return;
+    const dstr = pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+    const col = `var(${SLOTS[s.slot]})`;
+    g += `<path d="${dstr}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    const last = pts[pts.length-1];
+    g += `<circle cx="${last[0]}" cy="${last[1]}" r="3.4" fill="${col}" stroke="var(--surface)" stroke-width="2"/>`;
+    let ly = last[1]+4;
+    while (labelYs.some(v=>Math.abs(v-ly)<27)) ly += 27;
+    labelYs.push(ly);
+    const short = s.p.replace('Kepulauan ','Kep. ').replace('Nusa Tenggara','NT').replace('Kalimantan','Kal.').replace('Sulawesi','Sul.');
+    g += `<text x="${last[0]+8}" y="${ly}" font-size="11" font-weight="600" fill="var(--ink)">${short}</text>`;
+    g += `<text x="${last[0]+8}" y="${ly+12}" font-size="10.5" fill="var(--ink-2)" style="font-variant-numeric:tabular-nums">${fmt1(s.v[4])}</text>`;
+  });
+  svg.innerHTML = g + `<rect id="lcHit" x="${L}" y="${T}" width="${pw}" height="${ph}" fill="transparent"/>`;
+
+  const hit = svg.querySelector('#lcHit');
+  hit.addEventListener('pointermove', e=>{
+    const r = svg.getBoundingClientRect();
+    const sx = (e.clientX - r.left)*(W/r.width);
+    const i = Math.max(0, Math.min(4, Math.round((sx-L)/(pw/(YEARS.length-1)))));
+    const rows = series.filter(s=>s.v[i]!=null).sort((a,b)=>b.v[i]-a.v[i])
+      .map(s=>`<tr><td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(${SLOTS[s.slot]});margin-right:6px"></span>${s.p}</td><td>${fmt1(s.v[i])}</td></tr>`).join('');
+    showTT(`<div class="tt-t">${YEARS[i]}${i==3?'*':i==4?'**':''}</div><table>${rows}</table><div style="color:var(--muted);margin-top:3px">juta Rp per kapita</div>`, e.clientX, e.clientY);
+    svg.querySelectorAll('.xh').forEach(el=>el.remove());
+    const ln = document.createElementNS('http://www.w3.org/2000/svg','line');
+    ln.setAttribute('class','xh'); ln.setAttribute('x1',x(i)); ln.setAttribute('x2',x(i));
+    ln.setAttribute('y1',T); ln.setAttribute('y2',T+ph);
+    ln.setAttribute('stroke','var(--baseline)'); ln.setAttribute('stroke-dasharray','3 3');
+    svg.insertBefore(ln, hit);
+  });
+  hit.addEventListener('pointerleave', ()=>{ hideTT(); svg.querySelectorAll('.xh').forEach(el=>el.remove()); });
+}
+function niceTicks(min, max, n){
+  const span = max-min, step0 = span/n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1,2,2.5,5,10].map(m=>m*mag).find(s=>span/s<=n) || 10*mag;
+  const out=[]; for(let v=0; v<=max; v+=step) out.push(Math.round(v*100)/100);
+  return out;
+}
+
+/* ---------- table ---------- */
+let sortK='4', sortDir=-1, q='', pf='';
+const tbody = document.querySelector('#dataTable tbody');
+const provFilter = document.getElementById('provFilter');
+DATA.provs.forEach(p=>{ const o=document.createElement('option'); o.textContent=p.p; provFilter.appendChild(o); });
+provFilter.addEventListener('change', ()=>{ pf=provFilter.value; renderTable(); });
+document.getElementById('q').addEventListener('input', e=>{ q=e.target.value.trim().toLowerCase(); renderTable(); });
+
+function growth(v){
+  let f=0; while(f<4 && v[f]==null) f++;
+  if (v[4]==null || v[f]==null || f===4 || v[f]===0) return null;
+  return (Math.pow(v[4]/v[f], 1/(4-f))-1)*100;
+}
+document.querySelectorAll('#dataTable th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const k = th.dataset.k;
+    if (sortK===k) sortDir*=-1; else { sortK=k; sortDir = k==='n' ? 1 : -1; }
+    document.querySelectorAll('#dataTable th').forEach(x=>x.removeAttribute('aria-sort'));
+    th.setAttribute('aria-sort', sortDir===1?'ascending':'descending');
+    renderTable();
+  });
+});
+function renderTable(){
+  let rows = DATA.kk.map(d=>({...d, g:growth(d.v)}));
+  if (q)  rows = rows.filter(d=>d.n.toLowerCase().includes(q) || d.p.toLowerCase().includes(q));
+  if (pf) rows = rows.filter(d=>d.p===pf);
+  rows.sort((a,b)=>{
+    if (sortK==='n') return sortDir * a.n.localeCompare(b.n,'id');
+    const av = sortK==='g' ? a.g : a.v[+sortK], bv = sortK==='g' ? b.g : b.v[+sortK];
+    if (av==null && bv==null) return 0;
+    if (av==null) return 1; if (bv==null) return -1;
+    return sortDir*(av-bv);
+  });
+  tbody.innerHTML = rows.map(d=>`<tr>
+    <td class="l">${d.n}<br><span class="pv">${d.p}</span></td>
+    ${d.v.map(v=>`<td>${fmt(v)}</td>`).join('')}
+    <td class="${d.g!=null && d.g>=0 ? 'pos':''}">${d.g==null?'–':(d.g>=0?'+':'')+fmt1(d.g)+'%'}</td>
+  </tr>`).join('');
+}
+
+renderProv(); renderKK(); renderTrendControls(); renderLine(); renderTable();
+</script>
+
+</body>
+</html>
