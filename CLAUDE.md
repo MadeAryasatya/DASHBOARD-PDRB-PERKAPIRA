@@ -46,7 +46,12 @@ Kalau salah satu diedit, salin ulang ke yang lain sebelum commit.
 4. **Tren** (`#lineChart`, `renderLine`) — chip multi-select maks 6 provinsi;
    label ujung kanan anti-tabrakan (jarak minimal 27px — jangan dikecilkan lagi).
 5. **Top/Bottom 15 kab/kota** (`#kkBars`, `renderKK`).
-6. **Tabel 514 baris** (`renderTable`) — cari, filter provinsi, sortir, kolom Δ p.a. (CAGR).
+6. **Tabel 514 baris** (`renderTable`) — cari, filter provinsi, sortir, kolom Δ p.a. (CAGR),
+   plus **Indeks (Prov=100)** & **Kategori Income** metode benchmark provinsi (revisi mentor):
+   indeks = nilai 2025 ÷ rata-rata sederhana kab/kota se-provinsi × 100; kelas:
+   ≥140 Very High · 110–139 High · 90–109 Upper Middle · 70–89 Middle · 50–69 Lower Middle · <50 Low.
+   Metode yang sama ada di Excel `D:\INTERNSHIP\FILES\Income_Classification_Benchmark_Provinsi_2025.xlsx`
+   (template mentor: `Template_Income_Classification_Benchmark_Provinsi.xlsx`, jangan diubah).
 
 Satuan: tabel & bar = **ribu Rp**; grafik tren = **juta Rp**. Warna via CSS custom
 properties di `:root` (light) + `@media prefers-color-scheme: dark` + override `[data-theme]`.

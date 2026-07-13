@@ -135,7 +135,7 @@ svg text{font-family:inherit}
 
 /* ---- data table ---- */
 .tbl-scroll{overflow-x:auto; max-height:560px; overflow-y:auto; border:1px solid var(--ring); border-radius:8px}
-table.data{border-collapse:collapse; width:100%; font-size:13px; min-width:760px}
+table.data{border-collapse:collapse; width:100%; font-size:13px; min-width:920px}
 table.data th{
   position:sticky; top:0; background:var(--surface); z-index:2;
   text-align:right; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
@@ -255,7 +255,8 @@ footer.src{max-width:1200px; margin:26px auto 0; font-size:12px; color:var(--mut
     <div class="cardhead">
       <div>
         <h2>Seluruh kabupaten/kota</h2>
-        <p class="note">514 wilayah · klik judul kolom untuk mengurutkan · "–" = data belum tersedia</p>
+        <p class="note">514 wilayah · klik judul kolom untuk mengurutkan · "–" = data belum tersedia ·
+        Indeks = PDRB per kapita 2025 dibanding rata-rata kab/kota se-provinsinya (benchmark provinsi, prov = 100)</p>
       </div>
       <div class="controls">
         <input type="text" id="q" placeholder="Cari kabupaten/kota…" aria-label="Cari kabupaten atau kota">
@@ -269,6 +270,8 @@ footer.src{max-width:1200px; margin:26px auto 0; font-size:12px; color:var(--mut
           <th data-k="0">2021</th><th data-k="1">2022</th><th data-k="2">2023</th>
           <th data-k="3">2024*</th><th data-k="4" aria-sort="descending">2025**</th>
           <th data-k="g">Δ p.a.</th>
+          <th data-k="i">Indeks (Prov=100)</th>
+          <th data-k="c" class="l">Kategori Income</th>
         </tr></thead>
         <tbody></tbody>
       </table>
@@ -550,6 +553,18 @@ function growth(v){
   if (v[4]==null || v[f]==null || f===4 || v[f]===0) return null;
   return (Math.pow(v[4]/v[f], 1/(4-f))-1)*100;
 }
+// benchmark provinsi (rekomendasi mentor): rata-rata sederhana kab/kota 2025 per provinsi
+const provAvg = {};
+{ const g = {};
+  DATA.kk.forEach(d => { if (d.v[4]!=null) (g[d.p] = g[d.p] || []).push(d.v[4]); });
+  for (const p in g) provAvg[p] = g[p].reduce((a,b)=>a+b,0)/g[p].length;
+}
+function incIdx(d){ return d.v[4]==null || !provAvg[d.p] ? null : d.v[4]/provAvg[d.p]*100; }
+function kat6(i){
+  return i==null ? null :
+    i>=140 ? 'Very High' : i>=110 ? 'High' : i>=90 ? 'Upper Middle' :
+    i>=70 ? 'Middle' : i>=50 ? 'Lower Middle' : 'Low';
+}
 document.querySelectorAll('#dataTable th').forEach(th=>{
   th.addEventListener('click', ()=>{
     const k = th.dataset.k;
@@ -560,12 +575,14 @@ document.querySelectorAll('#dataTable th').forEach(th=>{
   });
 });
 function renderTable(){
-  let rows = DATA.kk.map(d=>({...d, g:growth(d.v)}));
+  let rows = DATA.kk.map(d=>({...d, g:growth(d.v), i:incIdx(d)}));
   if (q)  rows = rows.filter(d=>d.n.toLowerCase().includes(q) || d.p.toLowerCase().includes(q));
   if (pf) rows = rows.filter(d=>d.p===pf);
   rows.sort((a,b)=>{
     if (sortK==='n') return sortDir * a.n.localeCompare(b.n,'id');
-    const av = sortK==='g' ? a.g : a.v[+sortK], bv = sortK==='g' ? b.g : b.v[+sortK];
+    if (sortK==='c') return sortDir * ((a.i??-1)-(b.i??-1));
+    const av = sortK==='g' ? a.g : sortK==='i' ? a.i : a.v[+sortK],
+          bv = sortK==='g' ? b.g : sortK==='i' ? b.i : b.v[+sortK];
     if (av==null && bv==null) return 0;
     if (av==null) return 1; if (bv==null) return -1;
     return sortDir*(av-bv);
@@ -574,6 +591,8 @@ function renderTable(){
     <td class="l">${d.n}<br><span class="pv">${d.p}</span></td>
     ${d.v.map(v=>`<td>${fmt(v)}</td>`).join('')}
     <td class="${d.g!=null && d.g>=0 ? 'pos':''}">${d.g==null?'–':(d.g>=0?'+':'')+fmt1(d.g)+'%'}</td>
+    <td>${d.i==null?'–':fmt1(d.i)}</td>
+    <td class="l">${kat6(d.i)??'–'}</td>
   </tr>`).join('');
 }
 
