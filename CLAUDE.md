@@ -47,9 +47,10 @@ Kalau salah satu diedit, salin ulang ke yang lain sebelum commit.
    label ujung kanan anti-tabrakan (jarak minimal 27px — jangan dikecilkan lagi).
 5. **Top/Bottom 15 kab/kota** (`#kkBars`, `renderKK`).
 6. **Tabel 514 baris** (`renderTable`) — cari, filter provinsi, sortir, kolom Δ p.a. (CAGR),
-   plus **Indeks (Prov=100)** & **Kategori Income** metode benchmark provinsi (revisi mentor):
-   indeks = nilai 2025 ÷ rata-rata sederhana kab/kota se-provinsi × 100; kelas:
-   ≥140 Very High · 110–139 High · 90–109 Upper Middle · 70–89 Middle · 50–69 Lower Middle · <50 Low.
+   plus **Indeks (Prov=100)** & **Kategori (Persentil Prov)** — metode final revisi mentor:
+   indeks = nilai 2025 ÷ rata-rata sederhana kab/kota se-provinsi × 100 (informatif);
+   kategori = tertil persentil DALAM provinsi (persentil = jumlah wilayah se-provinsi di bawahnya ÷ (n−1)):
+   ≥2/3 High · ≥1/3 Middle · sisanya Low. Metode ambang 140/110/90/70/50 sudah tidak dipakai.
    Metode yang sama ada di Excel `D:\INTERNSHIP\FILES\Income_Classification_Benchmark_Provinsi_2025.xlsx`
    (template mentor: `Template_Income_Classification_Benchmark_Provinsi.xlsx`, jangan diubah).
 
